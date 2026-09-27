@@ -192,6 +192,34 @@ async function renderCreations() {
 }
 renderCreations();
 
+/* ---------- site-wide editable text (site.json) ---------- */
+async function loadSite() {
+  try {
+    const res = await fetch("site.json");
+    if (!res.ok) return;
+    const s = await res.json();
+    const set = (id, v) => {
+      const el = document.getElementById(id);
+      if (el && typeof v === "string" && v) el.textContent = v;
+    };
+    set("heroLede", s.heroLede);
+    set("missionText", s.missionText);
+    set("monthlyTheme", s.monthlyTheme);
+    if (s.instagramUrl) {
+      document.querySelectorAll("a.insta-link").forEach((a) => (a.href = s.instagramUrl));
+      const f = document.getElementById("instaFooter");
+      if (f) f.href = s.instagramUrl;
+    }
+    if (s.instagramHandle) {
+      const f = document.getElementById("instaFooter");
+      if (f) f.textContent = s.instagramHandle;
+    }
+  } catch {
+    /* baked-in copy stays as the fallback */
+  }
+}
+loadSite();
+
 /* ---------- address autocomplete (Photon, no API key needed) ---------- */
 function formatAddr(p) {
   const street = [p.housenumber, p.street].filter(Boolean).join(" ");
