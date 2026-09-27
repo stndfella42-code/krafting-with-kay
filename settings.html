@@ -58,25 +58,7 @@
     .status.ok{color:var(--olive)} .status.err{color:#a33}
     .divider{border:0;border-top:1px dashed var(--line);margin:1.1rem 0}
     .tiny{font-size:.8rem;color:var(--muted)}
-    /* ---------- crop modal ---------- */
-    .crop-overlay{position:fixed;inset:0;background:rgba(40,36,28,.82);z-index:100;
-      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;padding:1rem}
-    .crop-overlay[hidden]{display:none}
-    .crop-title{color:#fff;font-family:'Cormorant Garamond',serif;font-size:1.4rem;margin:0}
-    .crop-stage{position:relative;width:min(92vw,560px);overflow:hidden;
-      border-radius:12px;background:#222;touch-action:none;cursor:grab}
-    .crop-stage:active{cursor:grabbing}
-    .crop-stage img{position:absolute;inset:0;width:100%;height:100%;
-      user-select:none;-webkit-user-drag:none;pointer-events:none}
-    .crop-box{position:absolute;top:0;left:0;pointer-events:none;
-      box-shadow:0 0 0 9999px rgba(20,16,10,.62);border:2px solid #fff;border-radius:2px}
-    .crop-controls{display:flex;align-items:center;gap:.9rem;width:min(92vw,560px)}
-    .crop-controls .zoom-out,.crop-controls .zoom-in{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35);
-      width:44px;height:44px;border-radius:50%;font-size:1.3rem;cursor:pointer;flex:none}
-    .crop-controls input[type=range]{flex:1;accent-color:var(--sage);height:44px}
-    .crop-actions{display:flex;gap:.8rem}
-    .crop-actions .btn-ghost{color:#fff;border-color:rgba(255,255,255,.6)}
-    .crop-hint{color:rgba(255,255,255,.75);font-size:.85rem;margin:0;text-align:center}
+
   </style>
 </head>
 <body>
@@ -163,25 +145,6 @@
     <div class="wrap">
       <span class="status" id="status">Ready.</span>
       <button class="btn" id="saveBtn">Save all changes</button>
-    </div>
-  </div>
-
-  <!-- image cropper -->
-  <div class="crop-overlay" id="cropOverlay" hidden>
-    <h2 class="crop-title">Crop your photo</h2>
-    <p class="crop-hint">Drag the frame to choose what shows. Pinch or use the slider to zoom in.</p>
-    <div class="crop-stage" id="cropStage">
-      <img id="cropImg" alt="" draggable="false" />
-      <div class="crop-box" id="cropBox"></div>
-    </div>
-    <div class="crop-controls">
-      <button class="zoom-out" id="zoomOut" type="button" aria-label="Zoom out">−</button>
-      <input type="range" id="zoomSlider" min="100" max="400" value="100" aria-label="Zoom" />
-      <button class="zoom-in" id="zoomIn" type="button" aria-label="Zoom in">+</button>
-    </div>
-    <div class="crop-actions">
-      <button class="btn-ghost" id="cropCancel" type="button">Cancel</button>
-      <button class="btn" id="cropConfirm" type="button">Use this crop</button>
     </div>
   </div>
 
@@ -324,7 +287,33 @@ function cardEl(c, i) {
     const f = fileInput.files[0];
     if (!f) return;
     const rd = new FileReader();
-    rd.onload = () => openCropper(rd.result, i, div, fileInput);
+    rd.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const MAX = 1600;
+        const k = Math.min(1, MAX / Math.max(img.naturalWidth, img.naturalHeight));
+        const w = Math.round(img.naturalWidth * k);
+        const h = Math.round(img.naturalHeight * k);
+        const cv = document.createElement("canvas");
+        cv.width = w;
+        cv.height = h;
+        cv.getContext("2d").drawImage(img, 0, 0, w, h);
+        const dataUrl = cv.toDataURL("image/jpeg", 0.85);
+        const name = "creation-" + Date.now() + "-" + i + ".jpg";
+        pendingUploads[i] = { name, dataUrl };
+        div.querySelector('[data-f="image"]').value = "assets/creations/" + name;
+        let th = div.querySelector(".thumb");
+        if (!th) {
+          th = document.createElement("img");
+          th.className = "thumb";
+          th.alt = "";
+          div.appendChild(th);
+        }
+        th.src = dataUrl;
+        setStatus("Photo ready. Hit save to publish it.");
+      };
+      img.src = rd.result;
+    };
     rd.readAsDataURL(f);
   });
   div.querySelectorAll("input,textarea,select").forEach((el) => {
@@ -344,181 +333,6 @@ function collectCreations() {
     return { title: g("title") || "Untitled", description: g("description"), image: g("image") };
   });
 }
-
-/* ---------- image cropper: whole photo shown, drag a 16:10 frame over it ---------- */
-const cropper = {
-  img: null, iw: 0, ih: 0,
-  stageW: 0, stageH: 0,
-  zoom: 1,
-  bx: 0, by: 0, // crop frame top-left, in stage px
-  cardIndex: -1, cardDiv: null, fileInput: null,
-  pointers: new Map(), pinch: null,
-};
-
-function openCropper(dataUrl, cardIndex, cardDiv, fileInput) {
-  const img = new Image();
-  img.onload = () => {
-    cropper.img = img;
-    cropper.iw = img.naturalWidth;
-    cropper.ih = img.naturalHeight;
-    cropper.cardIndex = cardIndex;
-    cropper.cardDiv = cardDiv;
-    cropper.fileInput = fileInput;
-    cropper.zoom = 1;
-    cropper.pointers.clear();
-    cropper.pinch = null;
-    $("cropImg").src = dataUrl;
-    $("cropOverlay").hidden = false;
-    document.body.style.overflow = "hidden";
-    $("zoomSlider").value = 100;
-    requestAnimationFrame(layoutCropper);
-  };
-  img.src = dataUrl;
-}
-
-// stage fits the whole image on screen; frame is the largest 16:10 rect inside it
-function layoutCropper() {
-  const maxW = Math.min(window.innerWidth * 0.92, 560);
-  const maxH = window.innerHeight * 0.52;
-  const aspect = cropper.iw / cropper.ih;
-  let w = maxW, h = w / aspect;
-  if (h > maxH) { h = maxH; w = h * aspect; }
-  cropper.stageW = w;
-  cropper.stageH = h;
-  const stage = $("cropStage");
-  stage.style.width = w + "px";
-  stage.style.aspectRatio = cropper.iw + " / " + cropper.ih;
-  const full = boxSize(1);
-  cropper.bx = (w - full.w) / 2;
-  cropper.by = (h - full.h) / 2;
-  drawCropper();
-}
-
-function boxSize(z) {
-  const w = Math.min(cropper.stageW, cropper.stageH * 1.6) / (z || cropper.zoom);
-  return { w, h: w / 1.6 };
-}
-
-function clampBox() {
-  const { w, h } = boxSize();
-  cropper.bx = Math.min(Math.max(cropper.bx, 0), cropper.stageW - w);
-  cropper.by = Math.min(Math.max(cropper.by, 0), cropper.stageH - h);
-}
-
-function drawCropper() {
-  clampBox();
-  const { w, h } = boxSize();
-  const box = $("cropBox");
-  box.style.width = w + "px";
-  box.style.height = h + "px";
-  box.style.transform = `translate(${cropper.bx}px, ${cropper.by}px)`;
-  $("zoomSlider").value = Math.round(cropper.zoom * 100);
-}
-
-function setZoom(z, fx, fy) {
-  z = Math.min(4, Math.max(1, z));
-  const old = boxSize();
-  const nw = boxSize(z);
-  if (fx === undefined) fx = cropper.bx + old.w / 2;
-  if (fy === undefined) fy = cropper.by + old.h / 2;
-  const rx = (fx - cropper.bx) / old.w;
-  const ry = (fy - cropper.by) / old.h;
-  cropper.zoom = z;
-  cropper.bx = fx - nw.w * rx;
-  cropper.by = fy - nw.h * ry;
-  drawCropper();
-}
-
-function closeCropper() {
-  $("cropOverlay").hidden = true;
-  document.body.style.overflow = "";
-  cropper.pointers.clear();
-  cropper.pinch = null;
-  if (cropper.fileInput) cropper.fileInput.value = "";
-  cropper.fileInput = null;
-}
-
-function stagePoint(e) {
-  const r = $("cropStage").getBoundingClientRect();
-  return { x: e.clientX - r.left, y: e.clientY - r.top };
-}
-
-(function initCropper() {
-  const stage = $("cropStage");
-  stage.addEventListener("pointerdown", (e) => {
-    stage.setPointerCapture(e.pointerId);
-    cropper.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-    if (cropper.pointers.size === 2) {
-      const [a, b] = [...cropper.pointers.values()];
-      cropper.pinch = {
-        dist: Math.hypot(a.x - b.x, a.y - b.y) || 1,
-        zoom: cropper.zoom,
-      };
-    }
-    cropper.last = { x: e.clientX, y: e.clientY };
-  });
-  stage.addEventListener("pointermove", (e) => {
-    if (!cropper.pointers.has(e.pointerId)) return;
-    cropper.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-    if (cropper.pointers.size === 2 && cropper.pinch) {
-      const [a, b] = [...cropper.pointers.values()];
-      const dist = Math.hypot(a.x - b.x, a.y - b.y) || 1;
-      const mid = stagePoint({ clientX: (a.x + b.x) / 2, clientY: (a.y + b.y) / 2 });
-      setZoom(cropper.pinch.zoom * (dist / cropper.pinch.dist), mid.x, mid.y);
-    } else if (cropper.pointers.size === 1 && cropper.last) {
-      cropper.bx += e.clientX - cropper.last.x;
-      cropper.by += e.clientY - cropper.last.y;
-      drawCropper();
-    }
-    cropper.last = { x: e.clientX, y: e.clientY };
-  });
-  const endPointer = (e) => {
-    cropper.pointers.delete(e.pointerId);
-    cropper.pinch = null;
-    const rest = [...cropper.pointers.values()];
-    cropper.last = rest.length === 1 ? { x: rest[0].x, y: rest[0].y } : null;
-  };
-  stage.addEventListener("pointerup", endPointer);
-  stage.addEventListener("pointercancel", endPointer);
-  stage.addEventListener("wheel", (e) => {
-    e.preventDefault();
-    const p = stagePoint(e);
-    setZoom(cropper.zoom * (e.deltaY < 0 ? 1.12 : 0.89), p.x, p.y);
-  }, { passive: false });
-
-  $("zoomSlider").addEventListener("input", (e) => setZoom(e.target.value / 100));
-  $("zoomIn").addEventListener("click", () => setZoom(cropper.zoom * 1.25));
-  $("zoomOut").addEventListener("click", () => setZoom(cropper.zoom / 1.25));
-  $("cropCancel").addEventListener("click", closeCropper);
-
-  $("cropConfirm").addEventListener("click", () => {
-    if (!cropper.img) return;
-    const { w, h } = boxSize();
-    const k = cropper.iw / cropper.stageW; // source px per stage px
-    const cv = document.createElement("canvas");
-    cv.width = 1200;
-    cv.height = 750;
-    cv.getContext("2d").drawImage(cropper.img, cropper.bx * k, cropper.by * k, w * k, h * k, 0, 0, 1200, 750);
-    const dataUrl = cv.toDataURL("image/jpeg", 0.85);
-    const i = cropper.cardIndex;
-    const name = "creation-" + Date.now() + "-" + i + ".jpg";
-    pendingUploads[i] = { name, dataUrl };
-    const div = cropper.cardDiv;
-    if (div) {
-      div.querySelector('[data-f="image"]').value = "assets/creations/" + name;
-      let th = div.querySelector(".thumb");
-      if (!th) {
-        th = document.createElement("img");
-        th.className = "thumb";
-        th.alt = "";
-        div.appendChild(th);
-      }
-      th.src = dataUrl;
-    }
-    setStatus("Photo cropped. Hit save to publish it.");
-    closeCropper();
-  });
-})();
 
 /* ---------- homepage words + instagram ---------- */
 function renderSite() {
