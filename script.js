@@ -200,7 +200,7 @@ function initBooking(sessions) {
     }
     if (!FORMSPREE_FORM_ID) {
       note.className = "form-note";
-      note.textContent = "Online booking opens soon — Kay is getting it connected. Check back shortly!";
+      note.textContent = "Online booking opens soon — KWK is getting it connected. Check back shortly!";
       return;
     }
     submitBtn.disabled = true;
@@ -217,10 +217,10 @@ function initBooking(sessions) {
       if (!res.ok) throw new Error("send failed");
       form.reset();
       note.className = "form-note ok";
-      note.textContent = "Request sent! Kay will confirm your spots by email shortly.";
+      note.textContent = "Request sent! KWK will confirm your spots by email shortly.";
     } catch {
       note.className = "form-note err";
-      note.textContent = "Hmm, that didn't go through. Please try again or reach Kay on Instagram @krafting_w_kay.";
+      note.textContent = "Hmm, that didn't go through. Please try again or reach KWK on Instagram @krafting_w_kay.";
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = "Send booking request";

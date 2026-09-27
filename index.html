@@ -109,7 +109,7 @@
         <div class="section-head center">
           <p class="eyebrow">Reserve your spot</p>
           <h2>Book with <span class="thin">KWK</span></h2>
-          <p class="lede" style="margin:0 auto">Pick a session, tell Kay who's coming, and she'll confirm your spots by email.</p>
+          <p class="lede" style="margin:0 auto">Pick a session, tell KWK who's coming, and we'll confirm your spots by email.</p>
         </div>
         <form id="bookForm" class="book-form" novalidate>
           <div class="form-row">
@@ -124,11 +124,8 @@
             <label>Phone <span class="muted">(optional)</span>
               <input type="tel" name="phone" autocomplete="tel" placeholder="(303) 555-0123" />
             </label>
-            <label>Number of kids
-              <select name="kids">
-                <option>1</option><option>2</option><option>3</option><option>4</option>
-                <option>5</option><option>6+</option>
-              </select>
+            <label>Kids' names and ages
+              <input type="text" name="kids" required placeholder="Maya (7), Leo (5)" />
             </label>
           </div>
           <label>Choose a session
@@ -136,8 +133,12 @@
               <option value="" disabled selected>Loading sessions…</option>
             </select>
           </label>
-          <label>Anything Kay should know?
+          <label>Anything KWK should know?
             <textarea name="notes" rows="3" placeholder="Ages, allergies, birthday party details…"></textarea>
+          </label>
+          <label class="waiver">
+            <input type="checkbox" name="waiver" required />
+            <span>I agree to the KWK workshop waiver: I understand workshops involve hands-on crafting with kid-safe tools and materials, and I take responsibility for my child's participation.</span>
           </label>
           <button class="btn" type="submit" id="bookSubmit">Send booking request</button>
           <p class="form-note" id="formNote" role="status"></p>
@@ -182,7 +183,7 @@
       <div class="wrap">
         <p class="eyebrow">Recent work</p>
         <h2>Gallery</h2>
-        <!-- TODO: replace placeholders with Kay's real photos -->
+        <!-- TODO: replace placeholders with KWK's real photos -->
         <div class="gallery">
           <div class="tile t1"><span>Dried flower lantern</span></div>
           <div class="tile t2"><span>Bird bath</span></div>
