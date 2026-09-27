@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calendar — Krafting with Kay</title>
+  <meta name="description" content="Upcoming workshops and events at Krafting with Kay, Aurora, CO." />
+  <link rel="icon" href="assets/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="index.html#top">
+        <img src="assets/logo.png" alt="Krafting with Kay logo" />
+        <span class="brand-name">Krafting <span>with Kay</span></span>
+      </a>
+      <nav class="site-nav" id="siteNav">
+        <a href="index.html#mission">Mission</a>
+        <a href="index.html#workshops">Workshops</a>
+        <a href="events.html">Calendar</a>
+        <a href="index.html#visit">Visit</a>
+        <a href="https://www.instagram.com/krafting_w_kay" target="_blank" rel="noopener" class="btn btn-small">Follow</a>
+      </nav>
+      <button class="nav-toggle" id="navToggle" aria-label="Open menu">☰</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" style="padding-bottom:2.5rem">
+      <img class="hero-floral" src="assets/floral.png" alt="" aria-hidden="true" />
+      <div class="wrap hero-inner">
+        <p class="eyebrow">Workshops &amp; events</p>
+        <h1>Calendar</h1>
+        <p class="tagline">Reduce. Reuse. Reimagine.</p>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:1.5rem">
+      <div class="wrap">
+        <div id="calendarList">
+          <p class="muted">Loading upcoming sessions…</p>
+        </div>
+        <div class="visit-card center" style="margin-top:3rem">
+          <p class="eyebrow">Can't make it?</p>
+          <h2 style="font-size:1.8rem">Book a private class</h2>
+          <p class="lede" style="margin:0 auto 1.5rem">DM Kay on Instagram and she'll put one on the books — perfect for birthdays, team outings, and holidays.</p>
+          <a class="btn" href="https://www.instagram.com/krafting_w_kay" target="_blank" rel="noopener">DM Kay</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <img class="hero-floral" src="assets/floral.png" alt="" aria-hidden="true" />
+    <div class="wrap footer-inner">
+      <div class="footer-brand">
+        <img src="assets/logo.png" alt="Krafting with Kay logo" />
+        <span class="brand-name">Krafting <span>with Kay</span></span>
+      </div>
+      <p><a class="link-arrow" href="https://www.instagram.com/krafting_w_kay" target="_blank" rel="noopener" style="color:var(--cream)">@krafting_w_kay</a></p>
+      <p class="footer-note">© <span id="year"></span> Krafting with Kay · Reduce. Reuse. Reimagine. · Made with love in Aurora, CO</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
