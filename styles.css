@@ -343,7 +343,7 @@ h3 { font-size: 1.45rem; margin-bottom: 0.4rem; }
 }
 
 /* ---------- KwK wordmark hearts ---------- */
-.kwk { white-space: nowrap; }
+.kwk { white-space: nowrap; text-transform: none; }
 .kwk .kwkh {
   color: var(--terra);
   font-size: 0.58em;
