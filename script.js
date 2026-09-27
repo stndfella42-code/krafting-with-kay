@@ -72,7 +72,7 @@ function buildSessions(data) {
   if (r) {
     const d = new Date();
     d.setHours(12, 0, 0, 0);
-    d.setDate(d.getDate() + ((r.weekday - d.getDay() + 7) % 7));
+    d.setDate(d.getDate() + ((r.dayOfWeek - d.getDay() + 7) % 7));
     for (let i = 0; i < (r.weeksOut || 8); i++) {
       sessions.push({
         title: r.title, date: new Date(d),
@@ -129,6 +129,38 @@ function heartifyKwK(root) {
   }
 }
 
+/* ---------- workshop info (rendered from events.json, never hardcoded) ---------- */
+function populateWorkshopInfo(r) {
+  if (!r) return;
+  const set = (id, v) => {
+    const el = document.getElementById(id);
+    if (el && v) el.textContent = v;
+  };
+  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const dayName = days[r.dayOfWeek] || "Wednesday";
+  const range = r.startTime && r.endTime ? `${r.startTime} to ${r.endTime}` : (r.startTime || r.endTime || "");
+  set("wsTitle", r.title);
+  set("wsDayName", "every " + dayName);
+  set("wsTime", range);
+  set("wsDay", "Every " + dayName);
+  if (r.price) {
+    set("wsPrice", r.price);
+    const sub = document.getElementById("wsPriceSub");
+    if (sub) sub.style.display = "none";
+  }
+  const dealCard = document.getElementById("wsDealCard");
+  if (r.discountNote) {
+    set("wsDeal", r.discountNote);
+    const dsub = document.getElementById("wsDealSub");
+    if (dsub) dsub.style.display = "none";
+    if (dealCard) dealCard.style.display = "";
+  } else if (dealCard) {
+    dealCard.style.display = "none";
+  }
+  const visit = document.getElementById("visitLede");
+  if (visit && r.title && range) visit.textContent = `${r.title} every ${dayName}, ${range}.`;
+}
+
 async function initEvents() {
   const homeList = document.getElementById("upcomingList");
   const calList = document.getElementById("calendarList");
@@ -143,6 +175,7 @@ async function initEvents() {
     return;
   }
   const sessions = buildSessions(data);
+  populateWorkshopInfo(data.recurring);
 
   if (homeList) {
     homeList.innerHTML = sessions.slice(0, 3).map((s) => `
