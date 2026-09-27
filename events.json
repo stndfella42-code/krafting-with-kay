@@ -1,14 +1,14 @@
 {
   "_readme": "Krafting with Kay: events data. Edit this file to update workshops everywhere: the homepage 'Upcoming sessions' list and the full calendar page (events.html) both render from here automatically. RECURRING: weekly template (weekday 0=Sun..6=Sat; 3=Wednesday). WEEKS_OUT: how many weeks of sessions to generate. EVENTS: one-off specials; each needs title, date (YYYY-MM-DD), and optionally startTime/endTime/location/price/description/tag. Leave EVENTS empty if none.",
-  "events": [],
   "recurring": {
-    "description": "Weekly open crafting night. Each month has a theme. This season it's all about birds: birdhouses, feeders, and feathered friends.",
-    "endTime": "5:30 PM",
-    "location": "22253 E Ida Pl, Aurora, CO 80015",
-    "price": "$25 per person · $5 off when you bring a friend",
-    "startTime": "3:30 PM",
     "title": "Open Krafting",
-    "weekday": 3,
-    "weeksOut": 8
-  }
+    "dayOfWeek": 3,
+    "startTime": "3:30 PM",
+    "endTime": "5:30 PM",
+    "price": "$25 per person · $5 off when you bring a friend",
+    "discountNote": "",
+    "address": "",
+    "description": "Weekly open crafting night. Each month has a theme. This season it's all about birds: birdhouses, feeders, and feathered friends."
+  },
+  "events": []
 }
