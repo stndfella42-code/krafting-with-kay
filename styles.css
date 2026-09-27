@@ -268,6 +268,7 @@ h3 { font-size: 1.45rem; margin-bottom: 0.4rem; }
   border-radius: var(--radius); padding: 2rem;
 }
 .book-form label { display: block; font-weight: 500; font-size: 0.95rem; margin-bottom: 1.1rem; }
+.book-form label[hidden] { display: none; }
 .book-form input, .book-form select, .book-form textarea {
   display: block; width: 100%; margin-top: 0.4rem; padding: 0.8rem 1rem;
   border: 1px solid var(--line); border-radius: 10px; background: #fff;

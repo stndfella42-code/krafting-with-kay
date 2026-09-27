@@ -185,6 +185,20 @@ function initBooking(sessions) {
   priv.dataset.iso = "private";
   priv.textContent = "Private class / birthday party";
   select.appendChild(priv);
+  const calOpt = document.createElement("option");
+  calOpt.value = "__calendar__";
+  calOpt.dataset.iso = "calendar";
+  calOpt.textContent = "Pick a date from the calendar…";
+  select.appendChild(calOpt);
+
+  const customDateWrap = document.getElementById("customDateWrap");
+  const customDate = document.getElementById("customDate");
+  customDate.min = isoDate(new Date());
+  select.addEventListener("change", () => {
+    const isCal = select.value === "__calendar__";
+    customDateWrap.hidden = !isCal;
+    customDate.required = isCal;
+  });
 
   const want = new URLSearchParams(location.search).get("session");
   if (want) {
@@ -208,6 +222,14 @@ function initBooking(sessions) {
     note.className = "form-note";
     note.textContent = "";
     const payload = Object.fromEntries(new FormData(form).entries());
+    if (payload.session === "__calendar__") {
+      if (!customDate.value) {
+        customDate.reportValidity();
+        return;
+      }
+      payload.session = `Custom date — ${fmtDate(parseISODate(customDate.value))}`;
+      delete payload.customDate;
+    }
     try {
       const res = await fetch(`https://formspree.io/f/${FORMSPREE_FORM_ID}`, {
         method: "POST",
