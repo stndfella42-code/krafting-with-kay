@@ -3,20 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Krafting with Kay — Made by Kay, Loved by You!</title>
-  <meta name="description" content="Krafting with Kay — craft workshops and upcycled handmade creations in Aurora, CO. Open crafting every Wednesday!" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✂️</text></svg>" />
+  <title>Krafting with Kay — Reduce. Reuse. Reimagine.</title>
+  <meta name="description" content="Krafting with Kay — kid-powered, nature-inspired craft workshops and upcycled creations in Aurora, CO. Reduce. Reuse. Reimagine." />
+  <link rel="icon" href="assets/logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header class="site-header">
     <div class="wrap header-inner">
-      <a class="logo" href="#top">Krafting <span>with Kay</span></a>
+      <a class="brand" href="#top">
+        <img src="assets/logo.png" alt="Krafting with Kay logo" />
+        <span class="brand-name">Krafting <span>with Kay</span></span>
+      </a>
       <nav class="site-nav" id="siteNav">
-        <a href="#about">About</a>
+        <a href="#mission">Mission</a>
         <a href="#workshops">Workshops</a>
         <a href="#creations">Creations</a>
         <a href="#visit">Visit</a>
@@ -29,40 +32,50 @@
   <main id="top">
     <!-- HERO -->
     <section class="hero">
+      <img class="hero-floral" src="assets/floral.png" alt="" aria-hidden="true" />
       <div class="wrap hero-inner">
-        <p class="eyebrow">Aurora, Colorado · Craft workshops &amp; upcycled creations</p>
-        <h1>Made by Kay,<br /><em>Loved by You!</em></h1>
-        <p class="lede">Hands-on craft workshops and one-of-a-kind upcycled creations — from glowing dried-flower lanterns to fairy gardens and bird baths.</p>
+        <p class="eyebrow">Kid powered · Nature inspired</p>
+        <h1>Krafting<br />with <em>Kay</em></h1>
+        <p class="tagline">Reduce. Reuse. Reimagine.</p>
+        <p class="lede" style="margin-top:1.2rem">Hands-on craft workshops and upcycled creations in Aurora, Colorado — where everyday materials become <strong>meaningful creations</strong>.</p>
         <div class="hero-cta">
           <a href="#workshops" class="btn">Join a workshop</a>
           <a href="https://www.instagram.com/krafting_w_kay" target="_blank" rel="noopener" class="btn btn-ghost">See it on Instagram</a>
         </div>
       </div>
-      <div class="hero-deco" aria-hidden="true">✂️ 🧵 🎀</div>
     </section>
 
-    <!-- ABOUT -->
-    <section class="section" id="about">
-      <div class="wrap split">
-        <div class="photo-frame">
-          <!-- TODO: replace with Kay's photo from her brand portfolio -->
-          <div class="photo-placeholder">Kay's<br />photo here</div>
-        </div>
-        <div>
-          <p class="eyebrow">Meet Kay</p>
-          <h2>Crafting with heart</h2>
-          <p>Kay runs Krafting with Kay out of Aurora, Colorado — a craft studio built on upcycling, creativity, and community. Old jars become glowing lanterns, scraps become fairy gardens, and every Wednesday the doors open for anyone who wants to make something with their hands.</p>
-          <p>Her work has a soft spot for teachers, gifters, and crafters at heart — and gift cards are always available for the holidays.</p>
-          <a class="link-arrow" href="https://www.instagram.com/krafting_w_kay" target="_blank" rel="noopener">Follow along on Instagram →</a>
+    <!-- MISSION -->
+    <section class="section section-tint" id="mission">
+      <div class="wrap">
+        <p class="eyebrow">Our mission</p>
+        <h2>Upcycle · Create · <span class="thin">Imagine</span></h2>
+        <p class="lede">Helping children transform everyday materials into meaningful creations — discovering the value of their ideas, talents, and voices along the way.</p>
+        <div class="pillars">
+          <div class="pillar">
+            <div class="pillar-icon">🌱</div>
+            <h3>Reduce</h3>
+            <p>Environmental stewardship starts small — seeing new possibility in what others throw away.</p>
+          </div>
+          <div class="pillar">
+            <div class="pillar-icon">♻️</div>
+            <h3>Reuse</h3>
+            <p>Everyday materials get a second life through hands-on building, crafting, and creating.</p>
+          </div>
+          <div class="pillar">
+            <div class="pillar-icon">✨</div>
+            <h3>Reimagine</h3>
+            <p>Children discover their talents, build confidence, and make a positive impact in their community.</p>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- WORKSHOPS -->
-    <section class="section section-tint" id="workshops">
+    <section class="section" id="workshops">
       <div class="wrap">
         <p class="eyebrow">Weekly workshops</p>
-        <h2>Open Crafting, every Wednesday</h2>
+        <h2>Open Crafting, <span class="thin">every Wednesday</span></h2>
         <div class="workshop-box">
           <div class="workshop-detail">
             <strong>3:30 – 5:30 PM</strong>
@@ -78,12 +91,12 @@
           </div>
         </div>
         <p>Each month has a theme — this season it's all about <strong>birds</strong>: birdhouses, feeders, and feathered friends. Past projects include dreamy dried-flower mason jar lanterns for back-to-school crafting.</p>
-        <p>Want a private class? <a class="link-arrow" href="https://www.instagram.com/krafting_w_kay" target="_blank" rel="noopener">DM Kay on Instagram</a> and she'll put one on the books.</p>
+        <p>Want a private class? <a class="link-arrow" href="https://www.instagram.com/krafting_w_kay" target="_blank" rel="noopener">DM Kay on Instagram</a> and she'll put one on the books. Gift cards available — the holidays are right around the corner.</p>
       </div>
     </section>
 
     <!-- CREATIONS -->
-    <section class="section" id="creations">
+    <section class="section section-tint" id="creations">
       <div class="wrap">
         <p class="eyebrow">Upcycled &amp; handmade</p>
         <h2>Creations</h2>
@@ -113,11 +126,11 @@
     </section>
 
     <!-- GALLERY -->
-    <section class="section section-tint" id="gallery">
+    <section class="section" id="gallery">
       <div class="wrap">
         <p class="eyebrow">Recent work</p>
         <h2>Gallery</h2>
-        <!-- TODO: replace placeholders with Kay's real photos from her brand portfolio -->
+        <!-- TODO: replace placeholders with Kay's real photos -->
         <div class="gallery">
           <div class="tile t1"><span>Dried flower lantern</span></div>
           <div class="tile t2"><span>Bird bath</span></div>
@@ -131,24 +144,31 @@
     </section>
 
     <!-- VISIT -->
-    <section class="section" id="visit">
+    <section class="section section-tint" id="visit">
       <div class="wrap narrow center">
         <p class="eyebrow">Come kraft with us</p>
         <h2>Visit the studio</h2>
-        <p class="lede">Open crafting every Wednesday, 3:30 – 5:30 PM.</p>
-        <p><strong>22253 E Ida Pl<br />Aurora, CO 80015</strong></p>
-        <div class="hero-cta" style="justify-content:center">
-          <a class="btn" href="https://www.google.com/maps/search/?api=1&query=22253+E+Ida+Pl+Aurora+CO+80015" target="_blank" rel="noopener">Get directions</a>
-          <a class="btn btn-ghost" href="https://www.instagram.com/krafting_w_kay" target="_blank" rel="noopener">DM Kay</a>
+        <div class="visit-card">
+          <p class="lede" style="margin:0 auto">Open crafting every Wednesday, 3:30 – 5:30 PM.</p>
+          <address><strong>22253 E Ida Pl<br />Aurora, CO 80015</strong></address>
+          <div class="hero-cta" style="justify-content:center; margin-top:0">
+            <a class="btn" href="https://www.google.com/maps/search/?api=1&query=22253+E+Ida+Pl+Aurora+CO+80015" target="_blank" rel="noopener">Get directions</a>
+            <a class="btn btn-ghost" href="https://www.instagram.com/krafting_w_kay" target="_blank" rel="noopener">DM Kay</a>
+          </div>
         </div>
       </div>
     </section>
   </main>
 
   <footer class="site-footer">
+    <img class="hero-floral" src="assets/floral.png" alt="" aria-hidden="true" />
     <div class="wrap footer-inner">
-      <p>© <span id="year"></span> Krafting with Kay · Made by Kay, Loved by You!</p>
-      <p><a class="link-arrow" href="https://www.instagram.com/krafting_w_kay" target="_blank" rel="noopener">@krafting_w_kay</a></p>
+      <div class="footer-brand">
+        <img src="assets/logo.png" alt="Krafting with Kay logo" />
+        <span class="brand-name">Krafting <span>with Kay</span></span>
+      </div>
+      <p><a class="link-arrow" href="https://www.instagram.com/krafting_w_kay" target="_blank" rel="noopener" style="color:var(--cream)">@krafting_w_kay</a></p>
+      <p class="footer-note">© <span id="year"></span> Krafting with Kay · Reduce. Reuse. Reimagine. · Made with love in Aurora, CO</p>
     </div>
   </footer>
 
