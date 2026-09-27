@@ -148,7 +148,7 @@ async function initEvents() {
           <p class="event-meta">${sessionTime(s)}${s.location ? " · " + s.location : ""}</p>
           ${s.price ? `<p class="event-price">${s.price}</p>` : ""}
           ${s.description ? `<p class="muted small">${s.description}</p>` : ""}
-          <a class="link-arrow" href="index.html?session=${isoDate(s.date)}#book">Book with KWK →</a>
+          <a class="link-arrow" href="index.html?session=${isoDate(s.date)}#book">Book with KwK →</a>
         </div>
       </article>`;
     });
@@ -162,6 +162,35 @@ async function initEvents() {
   initBooking(sessions);
 }
 initEvents();
+
+/* ---------- creations (rendered from creations.json) ---------- */
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  }[c]));
+}
+async function renderCreations() {
+  const grid = document.getElementById("creationsGrid");
+  if (!grid) return;
+  try {
+    const items = await (await fetch("creations.json")).json();
+    grid.innerHTML = items.map((c) => `
+      <article class="card">
+        ${c.image
+          ? `<img class="card-img" src="${esc(c.image)}" alt="${esc(c.title)}" loading="lazy" />`
+          : `<div class="card-icon">${esc(c.icon || "🌿")}</div>`}
+        <h3>${esc(c.title)}</h3>
+        <p>${esc(c.description)}</p>
+      </article>`).join("");
+    grid.querySelectorAll(".card").forEach((el) => {
+      el.classList.add("reveal");
+      io.observe(el);
+    });
+  } catch {
+    grid.innerHTML = '<p class="muted">Check back soon!</p>';
+  }
+}
+renderCreations();
 
 /* ---------- address autocomplete (Photon, no API key needed) ---------- */
 function formatAddr(p) {
@@ -292,7 +321,7 @@ function initBooking(sessions) {
     }
     if (!FORMSPREE_FORM_ID) {
       note.className = "form-note";
-      note.textContent = "Online booking opens soon — KWK is getting it connected. Check back shortly!";
+      note.textContent = "Online booking opens soon — KwK is getting it connected. Check back shortly!";
       return;
     }
     submitBtn.disabled = true;
@@ -322,15 +351,15 @@ function initBooking(sessions) {
       const res = await fetch(`https://formspree.io/f/${FORMSPREE_FORM_ID}`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ ...payload, _subject: `KWK booking request: ${payload.session}` }),
+        body: JSON.stringify({ ...payload, _subject: `KwK booking request: ${payload.session}` }),
       });
       if (!res.ok) throw new Error("send failed");
       form.reset();
       note.className = "form-note ok";
-      note.textContent = "Request sent! KWK will confirm your spots by email shortly.";
+      note.textContent = "Request sent! KwK will confirm your spots by email shortly.";
     } catch {
       note.className = "form-note err";
-      note.textContent = "Hmm, that didn't go through. Please try again or reach KWK on Instagram @krafting_w_kay.";
+      note.textContent = "Hmm, that didn't go through. Please try again or reach KwK on Instagram @krafting_w_kay.";
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = "Send booking request";
