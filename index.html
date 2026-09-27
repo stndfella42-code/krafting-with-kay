@@ -120,13 +120,13 @@
               <input type="email" name="email" required autocomplete="email" placeholder="you@example.com" />
             </label>
           </div>
-          <div class="form-row">
-            <label>Phone <span class="muted">(optional)</span>
-              <input type="tel" name="phone" autocomplete="tel" placeholder="(303) 555-0123" />
-            </label>
-            <label>Kids' names and ages
-              <input type="text" name="kids" required placeholder="Maya (7), Leo (5)" />
-            </label>
+          <label>Phone <span class="muted">(optional)</span>
+            <input type="tel" name="phone" autocomplete="tel" placeholder="(303) 555-0123" />
+          </label>
+          <div class="kids-block">
+            <span class="kids-heading">Kids attending</span>
+            <div id="kidRows"></div>
+            <button type="button" id="addKidBtn" class="add-kid">+ Add another child</button>
           </div>
           <label>Choose a session
             <select id="sessionSelect" name="session" required>
@@ -146,8 +146,6 @@
           <button class="btn" type="submit" id="bookSubmit">Send booking request</button>
           <p class="form-note" id="formNote" role="status"></p>
         </form>
-      </div>
-    </section>
       </div>
     </section>
 

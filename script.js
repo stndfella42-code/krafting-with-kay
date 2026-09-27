@@ -206,6 +206,25 @@ function initBooking(sessions) {
     if (match) match.selected = true;
   }
 
+  const kidRows = document.getElementById("kidRows");
+  function kidRow(removable) {
+    const div = document.createElement("div");
+    div.className = "kid-row";
+    div.innerHTML =
+      '<label>Child\'s name<input type="text" name="kid_name" required placeholder="Maya" /></label>' +
+      '<label>Age<input type="number" name="kid_age" required min="2" max="17" placeholder="7" /></label>' +
+      (removable
+        ? '<button type="button" class="kid-remove" aria-label="Remove this child">×</button>'
+        : '<span></span>');
+    const btn = div.querySelector(".kid-remove");
+    if (btn) btn.addEventListener("click", () => div.remove());
+    return div;
+  }
+  kidRows.appendChild(kidRow(false));
+  document.getElementById("addKidBtn").addEventListener("click", () => {
+    kidRows.appendChild(kidRow(true));
+  });
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (!form.checkValidity()) {
@@ -221,7 +240,17 @@ function initBooking(sessions) {
     submitBtn.textContent = "Sending…";
     note.className = "form-note";
     note.textContent = "";
-    const payload = Object.fromEntries(new FormData(form).entries());
+    const fd = new FormData(form);
+    const kids = [];
+    kidRows.querySelectorAll(".kid-row").forEach((row) => {
+      const n = row.querySelector("[name=kid_name]").value.trim();
+      const a = row.querySelector("[name=kid_age]").value.trim();
+      if (n || a) kids.push(a ? `${n} (${a})` : n);
+    });
+    fd.delete("kid_name");
+    fd.delete("kid_age");
+    const payload = Object.fromEntries(fd.entries());
+    payload.kids = kids.join(", ");
     if (payload.session === "__calendar__") {
       if (!customDate.value) {
         customDate.reportValidity();

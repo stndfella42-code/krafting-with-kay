@@ -289,6 +289,22 @@ h3 { font-size: 1.45rem; margin-bottom: 0.4rem; }
   border-radius: 10px; padding: 0.9rem 1rem; cursor: pointer;
 }
 .waiver input { width: auto; margin: 0.2rem 0 0; accent-color: var(--sage-deep); }
+.kids-block { margin-bottom: 1.1rem; }
+.kids-heading { display: block; font-weight: 500; font-size: 0.95rem; margin-bottom: 0.6rem; }
+.kid-row { display: grid; grid-template-columns: 1fr 90px 40px; gap: 0.7rem; align-items: end; margin-bottom: 0.7rem; }
+.kid-row label { margin-bottom: 0; }
+.kid-remove {
+  background: none; border: 1px solid var(--line); border-radius: 10px;
+  font-size: 1.3rem; line-height: 1; color: var(--ink-soft); cursor: pointer;
+  padding: 0.65rem 0;
+}
+.kid-remove:hover { border-color: #a4442e; color: #a4442e; }
+.add-kid {
+  width: 100%; background: none; border: 1px dashed var(--line); border-radius: 10px;
+  padding: 0.7rem 1rem; font-family: var(--font-body); font-size: 0.92rem;
+  color: var(--sage-deep); cursor: pointer;
+}
+.add-kid:hover { border-color: var(--sage); background: var(--cream); }
 #bookSubmit:disabled { opacity: 0.6; cursor: wait; }
 
 /* ---------- responsive ---------- */
