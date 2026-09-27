@@ -78,6 +78,17 @@
     .crop-actions{display:flex;gap:.8rem}
     .crop-actions .btn-ghost{color:#fff;border-color:rgba(255,255,255,.6)}
     .crop-hint{color:rgba(255,255,255,.75);font-size:.85rem;margin:0;text-align:center;max-width:34rem}
+    .crop-modes{display:flex;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:4px;gap:4px}
+    .crop-mode{border:0;background:transparent;color:rgba(255,255,255,.75);font:inherit;font-size:.85rem;
+      padding:.5rem 1.1rem;border-radius:999px;cursor:pointer}
+    .crop-mode.active{background:#fff;color:#3a352c;font-weight:600}
+    .fit-bg{display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+      filter:blur(28px) brightness(.72);transform:scale(1.12);pointer-events:none}
+    .crop-stage.fit .fit-bg{display:block}
+    .crop-stage.fit #cropImg{object-fit:contain}
+    .crop-stage.fit .crop-box{display:none}
+    .crop-controls button:disabled{opacity:.35;cursor:default}
+    .crop-controls input[type=range]:disabled{opacity:.35}
   </style>
 </head>
 <body>
@@ -170,8 +181,13 @@
   <!-- image cropper -->
   <div class="crop-overlay" id="cropOverlay" hidden>
     <h2 class="crop-title">Crop your photo</h2>
-    <p class="crop-hint">You see the whole photo here. Drag the frame to choose what shows on the card. Every card photo is the same shape so the page stays tidy.</p>
+    <p class="crop-hint">Fill frame: drag to choose what shows. Full photo: the entire picture fits, with a soft blurred background.</p>
+    <div class="crop-modes">
+      <button class="crop-mode active" id="modeFill" type="button">Fill frame</button>
+      <button class="crop-mode" id="modeFit" type="button">Full photo</button>
+    </div>
     <div class="crop-stage" id="cropStage">
+      <img class="fit-bg" id="cropImgBg" alt="" />
       <img id="cropImg" alt="" draggable="false" />
       <div class="crop-box" id="cropBox"></div>
     </div>
@@ -351,7 +367,7 @@ const CROP_W = 1200, CROP_H = 900, CROP_RATIO = CROP_W / CROP_H;
 const cropper = {
   img: null, iw: 0, ih: 0,
   stageW: 0, stageH: 0,
-  zoom: 1,
+  zoom: 1, mode: "fill",
   bx: 0, by: 0, // crop frame top-left, in stage px
   cardIndex: -1, cardDiv: null, fileInput: null,
   pointers: new Map(), pinch: null, last: null,
@@ -371,7 +387,9 @@ function openCropper(dataUrl, cardIndex, cardDiv, fileInput) {
     cropper.pinch = null;
     cropper.last = null;
     $("cropImg").src = dataUrl;
+    $("cropImgBg").src = dataUrl;
     $("cropOverlay").hidden = false;
+    setCropMode("fill");
     document.body.style.overflow = "hidden";
     $("zoomSlider").value = 100;
     requestAnimationFrame(layoutCropper);
@@ -382,19 +400,41 @@ function openCropper(dataUrl, cardIndex, cardDiv, fileInput) {
 // stage fits the whole image on screen; frame is the largest 4:3 rect inside it
 function layoutCropper() {
   const maxW = Math.min(window.innerWidth * 0.92, 560);
+  const stage = $("cropStage");
+  if (cropper.mode === "fit") {
+    // fixed card shape; whole photo shown contained over a blurred fill
+    const w = maxW, h = w / CROP_RATIO;
+    cropper.stageW = w;
+    cropper.stageH = h;
+    stage.style.width = w + "px";
+    stage.style.aspectRatio = CROP_W + " / " + CROP_H;
+    drawCropper();
+    return;
+  }
   const maxH = window.innerHeight * 0.52;
   const aspect = cropper.iw / cropper.ih;
   let w = maxW, h = w / aspect;
   if (h > maxH) { h = maxH; w = h * aspect; }
   cropper.stageW = w;
   cropper.stageH = h;
-  const stage = $("cropStage");
   stage.style.width = w + "px";
   stage.style.aspectRatio = cropper.iw + " / " + cropper.ih;
   const full = boxSize(1);
   cropper.bx = (w - full.w) / 2;
   cropper.by = (h - full.h) / 2;
   drawCropper();
+}
+
+function setCropMode(mode) {
+  cropper.mode = mode;
+  $("modeFill").classList.toggle("active", mode === "fill");
+  $("modeFit").classList.toggle("active", mode === "fit");
+  $("cropStage").classList.toggle("fit", mode === "fit");
+  const fit = mode === "fit";
+  $("zoomSlider").disabled = fit;
+  $("zoomOut").disabled = fit;
+  $("zoomIn").disabled = fit;
+  layoutCropper();
 }
 
 function boxSize(z) {
@@ -490,6 +530,8 @@ function stagePoint(e) {
     setZoom(cropper.zoom * (e.deltaY < 0 ? 1.12 : 0.89), p.x, p.y);
   }, { passive: false });
 
+  $("modeFill").addEventListener("click", () => setCropMode("fill"));
+  $("modeFit").addEventListener("click", () => setCropMode("fit"));
   $("zoomSlider").addEventListener("input", (e) => setZoom(e.target.value / 100));
   $("zoomIn").addEventListener("click", () => setZoom(cropper.zoom * 1.25));
   $("zoomOut").addEventListener("click", () => setZoom(cropper.zoom / 1.25));
@@ -502,7 +544,20 @@ function stagePoint(e) {
     const cv = document.createElement("canvas");
     cv.width = CROP_W;
     cv.height = CROP_H;
-    cv.getContext("2d").drawImage(cropper.img, cropper.bx * k, cropper.by * k, w * k, h * k, 0, 0, CROP_W, CROP_H);
+    const cx = cv.getContext("2d");
+    if (cropper.mode === "fit") {
+      const iw = cropper.iw, ih = cropper.ih;
+      const cover = Math.max(CROP_W / iw, CROP_H / ih) * 1.15;
+      const cw = iw * cover, ch = ih * cover;
+      try { cx.filter = "blur(60px) brightness(0.8)"; } catch (e) {}
+      cx.drawImage(cropper.img, (CROP_W - cw) / 2, (CROP_H - ch) / 2, cw, ch);
+      try { cx.filter = "none"; } catch (e) {}
+      const cont = Math.min(CROP_W / iw, CROP_H / ih);
+      const fw = iw * cont, fh = ih * cont;
+      cx.drawImage(cropper.img, (CROP_W - fw) / 2, (CROP_H - fh) / 2, fw, fh);
+    } else {
+      cx.drawImage(cropper.img, cropper.bx * k, cropper.by * k, w * k, h * k, 0, 0, CROP_W, CROP_H);
+    }
     const dataUrl = cv.toDataURL("image/jpeg", 0.85);
     const i = cropper.cardIndex;
     const name = "creation-" + Date.now() + "-" + i + ".jpg";
