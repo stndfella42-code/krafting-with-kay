@@ -4,7 +4,6 @@
  * which triggers a Vercel redeploy.
  *
  * Body: {
- *   password: string,            // must match KWK_ADMIN_PASSWORD
  *   files: {                     // filename -> parsed JSON content
  *     "creations.json": [...],
  *     "events.json": {...},
@@ -15,7 +14,10 @@
  *
  * Images referenced by creations cards are stored under assets/creations/.
  *
- * Env: KWK_ADMIN_PASSWORD, GITHUB_PAT (fine-grained token, Contents read+write
+ * NOTE: no password gate. Anyone with the settings URL can publish changes,
+ * so keep the URL private. All changes are committed to git history.
+ *
+ * Env: GITHUB_PAT (fine-grained token, Contents read+write
  * on the site repo), GITHUB_REPO (owner/repo, default stndfella42-code/krafting-with-kay)
  */
 
@@ -69,10 +71,6 @@ async function gh(path, token, opts = {}) {
 
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") return bad(res, 405, "POST only");
-
-  const adminPw = process.env.KWK_ADMIN_PASSWORD;
-  if (!adminPw) return bad(res, 500, "Admin password isn't configured.");
-  if (!req.body || req.body.password !== adminPw) return bad(res, 403, "Wrong password.");
 
   const token = process.env.GITHUB_PAT;
   if (!token) return bad(res, 500, "Publishing isn't configured yet.");

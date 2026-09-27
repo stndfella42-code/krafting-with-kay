@@ -23,8 +23,6 @@
     header.top h1{font-size:2rem;margin-top:.5rem}
     header.top p{color:var(--muted);margin:.4rem 0 0}
     .back{display:inline-block;margin-top:1rem;color:var(--terra);text-decoration:none;font-size:.9rem}
-    .gate{background:#fff;border:1px solid var(--line);border-radius:14px;padding:2rem;margin:2rem 0;box-shadow:0 8px 24px rgba(62,58,50,.06)}
-    .gate label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:.4rem}
     .row{display:flex;gap:.6rem}
     input[type=text],input[type=password],input[type=time],input[type=date],input[type=url],select,textarea{
       width:100%;padding:.65rem .8rem;border:1px solid var(--line);border-radius:10px;
@@ -90,18 +88,7 @@
       <a class="back" href="index.html">&larr; Back to the site</a>
     </header>
 
-    <div class="gate" id="gate">
-      <h2 style="margin-bottom:.6rem">Private area</h2>
-      <p class="tiny" style="margin-top:0">Enter the site password to edit.</p>
-      <label for="pw">Password</label>
-      <div class="row">
-        <input type="password" id="pw" autocomplete="current-password" placeholder="Site password" />
-        <button class="btn" id="unlockBtn">Unlock</button>
-      </div>
-      <p class="err" id="gateErr"></p>
-    </div>
-
-    <div id="panel" hidden>
+    <div id="panel">
       <!-- ============ SESSIONS & CALENDAR ============ -->
       <div class="section">
         <h2>Sessions &amp; Calendar</h2>
@@ -200,7 +187,6 @@
 
 <script>
 const $ = (id) => document.getElementById(id);
-let PASSWORD = "";
 let creations = [];
 let eventsData = null;
 let siteData = {};
@@ -226,31 +212,24 @@ function to12h(t) {
 }
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
-/* ---------- login ---------- */
-$("unlockBtn").addEventListener("click", unlock);
-$("pw").addEventListener("keydown", (e) => { if (e.key === "Enter") unlock(); });
-async function unlock() {
-  const pw = $("pw").value;
-  $("gateErr").textContent = "";
-  if (!pw) { $("gateErr").textContent = "Enter the password first."; return; }
-  $("unlockBtn").disabled = true;
+/* ---------- load ---------- */
+async function load() {
   try {
     const [c, e, s] = await Promise.all([
       fetch("creations.json").then((r) => { if (!r.ok) throw 0; return r.json(); }),
       fetch("events.json").then((r) => { if (!r.ok) throw 0; return r.json(); }),
       fetch("site.json").then((r) => { if (!r.ok) throw 0; return r.json(); }),
     ]);
-    PASSWORD = pw;
     creations = c; eventsData = e; siteData = s;
     renderAll();
-    $("gate").hidden = true;
     $("panel").hidden = false;
     $("savebar").hidden = false;
   } catch {
-    $("gateErr").textContent = "Could not load the site data. Check your connection and try again.";
+    document.querySelector(".wrap").insertAdjacentHTML("beforeend",
+      '<p class="err" style="margin-top:1rem">Could not load the site data. Check your connection and refresh.</p>');
   }
-  $("unlockBtn").disabled = false;
 }
+load();
 
 function renderAll() {
   renderWeekly();
@@ -585,7 +564,6 @@ $("saveBtn").addEventListener("click", async () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        password: PASSWORD,
         files: {
           "creations.json": finalCreations,
           "events.json": finalEvents,
