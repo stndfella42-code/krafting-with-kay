@@ -24,7 +24,7 @@
         <a href="events.html">Calendar</a>
         <a href="#creations">Creations</a>
         <a href="#visit">Visit</a>
-        <a href="https://www.instagram.com/krafting_w_kay" target="_blank" rel="noopener" class="btn btn-small">Follow</a>
+        <a href="#book" class="btn btn-small">Book with KWK</a>
       </nav>
       <button class="nav-toggle" id="navToggle" aria-label="Open menu">☰</button>
     </div>
@@ -97,7 +97,53 @@
           <div id="upcomingList"><p class="muted">Loading…</p></div>
           <p style="margin-top:1rem"><a class="link-arrow" href="events.html">View the full calendar →</a></p>
         </div>
-        <p style="margin-top:1.5rem">Want a private class? <a class="link-arrow" href="https://www.instagram.com/krafting_w_kay" target="_blank" rel="noopener">DM Kay on Instagram</a> and she'll put one on the books. Gift cards available — the holidays are right around the corner.</p>
+        <div class="center" style="margin-top:1.5rem">
+          <p>Want a private class for a birthday or team outing? Gift cards available too — the holidays are right around the corner.</p>
+          <a class="btn" href="#book">Book with KWK</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="book">
+      <div class="wrap">
+        <div class="section-head center">
+          <p class="eyebrow">Reserve your spot</p>
+          <h2>Book with <span class="thin">KWK</span></h2>
+          <p class="lede" style="margin:0 auto">Pick a session, tell Kay who's coming, and she'll confirm your spots by email.</p>
+        </div>
+        <form id="bookForm" class="book-form" novalidate>
+          <div class="form-row">
+            <label>Your name
+              <input type="text" name="name" required autocomplete="name" placeholder="Jane Doe" />
+            </label>
+            <label>Email
+              <input type="email" name="email" required autocomplete="email" placeholder="you@example.com" />
+            </label>
+          </div>
+          <div class="form-row">
+            <label>Phone <span class="muted">(optional)</span>
+              <input type="tel" name="phone" autocomplete="tel" placeholder="(303) 555-0123" />
+            </label>
+            <label>Number of kids
+              <select name="kids">
+                <option>1</option><option>2</option><option>3</option><option>4</option>
+                <option>5</option><option>6+</option>
+              </select>
+            </label>
+          </div>
+          <label>Choose a session
+            <select id="sessionSelect" name="session" required>
+              <option value="" disabled selected>Loading sessions…</option>
+            </select>
+          </label>
+          <label>Anything Kay should know?
+            <textarea name="notes" rows="3" placeholder="Ages, allergies, birthday party details…"></textarea>
+          </label>
+          <button class="btn" type="submit" id="bookSubmit">Send booking request</button>
+          <p class="form-note" id="formNote" role="status"></p>
+        </form>
+      </div>
+    </section>
       </div>
     </section>
 

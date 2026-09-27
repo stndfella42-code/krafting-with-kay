@@ -261,6 +261,28 @@ h3 { font-size: 1.45rem; margin-bottom: 0.4rem; }
 .event-price { color: var(--clay); font-weight: 500; font-size: 0.95rem; margin: 0.2rem 0; }
 .event-body .link-arrow { display: inline-block; margin-top: 0.5rem; }
 
+/* ---------- booking form ---------- */
+.book-form {
+  max-width: 660px; margin: 0 auto;
+  background: var(--paper); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 2rem;
+}
+.book-form label { display: block; font-weight: 500; font-size: 0.95rem; margin-bottom: 1.1rem; }
+.book-form input, .book-form select, .book-form textarea {
+  display: block; width: 100%; margin-top: 0.4rem; padding: 0.8rem 1rem;
+  border: 1px solid var(--line); border-radius: 10px; background: #fff;
+  font-family: var(--font-body); font-size: 1rem; color: var(--ink);
+}
+.book-form input:focus, .book-form select:focus, .book-form textarea:focus {
+  outline: 2px solid var(--sage); border-color: var(--sage);
+}
+.book-form textarea { resize: vertical; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.form-note { margin-top: 1rem; font-size: 0.95rem; }
+.form-note.ok { color: var(--sage-deep); font-weight: 500; }
+.form-note.err { color: #a4442e; }
+#bookSubmit:disabled { opacity: 0.6; cursor: wait; }
+
 /* ---------- responsive ---------- */
 @media (max-width: 760px) {
   .split { grid-template-columns: 1fr; gap: 2rem; }
@@ -271,6 +293,8 @@ h3 { font-size: 1.45rem; margin-bottom: 0.4rem; }
     padding: 1rem 1.5rem 1.5rem; border-bottom: 1px solid var(--line); gap: 0.8rem;
   }
   .site-nav.open { display: flex; }
-  .hero { padding: 3rem 0 3.5rem; }
+  .hero { padding: 0 0 3.5rem; }
   .hero-floral { opacity: 0.3; }
+  .form-row { grid-template-columns: 1fr; }
+  .book-form { padding: 1.4rem; }
 }

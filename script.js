@@ -42,6 +42,16 @@ document
 /* ---------- dynamic events ----------
    events.json is the single source of truth. The homepage
    "Upcoming sessions" list and events.html both render from it. */
+
+/* Booking form: paste the Formspree form ID here to go live.
+   Get one free at https://formspree.io (create a form, copy the ID
+   from the endpoint URL https://formspree.io/f/YOUR_ID). */
+const FORMSPREE_FORM_ID = "";
+
+function isoDate(d) {
+  const p = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
 function fmtDate(d) {
   return d.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
 }
@@ -100,6 +110,7 @@ async function initEvents() {
   } catch {
     if (homeList) homeList.innerHTML = '<p class="muted">Check Instagram for the latest schedule.</p>';
     if (calList) calList.innerHTML = '<p class="muted">Check Instagram for the latest schedule.</p>';
+    initBooking([]);
     return;
   }
   const sessions = buildSessions(data);
@@ -137,7 +148,7 @@ async function initEvents() {
           <p class="event-meta">${sessionTime(s)}${s.location ? " · " + s.location : ""}</p>
           ${s.price ? `<p class="event-price">${s.price}</p>` : ""}
           ${s.description ? `<p class="muted small">${s.description}</p>` : ""}
-          <a class="link-arrow" href="https://www.instagram.com/krafting_w_kay" target="_blank" rel="noopener">RSVP via DM →</a>
+          <a class="link-arrow" href="index.html?session=${isoDate(s.date)}#book">Book with KWK →</a>
         </div>
       </article>`;
     });
@@ -147,5 +158,72 @@ async function initEvents() {
       io.observe(el);
     });
   }
+
+  initBooking(sessions);
 }
 initEvents();
+
+/* ---------- booking form ---------- */
+function initBooking(sessions) {
+  const form = document.getElementById("bookForm");
+  if (!form) return;
+  const select = document.getElementById("sessionSelect");
+  const note = document.getElementById("formNote");
+  const submitBtn = document.getElementById("bookSubmit");
+
+  select.innerHTML = '<option value="" disabled selected>Choose a session…</option>';
+  sessions.forEach((s) => {
+    const iso = isoDate(s.date);
+    const opt = document.createElement("option");
+    opt.value = `${s.title} — ${fmtDate(s.date)} (${sessionTime(s)})`;
+    opt.dataset.iso = iso;
+    opt.textContent = `${fmtShortDate(s.date)} — ${s.title} (${sessionTime(s)})`;
+    select.appendChild(opt);
+  });
+  const priv = document.createElement("option");
+  priv.value = "Private class or party";
+  priv.dataset.iso = "private";
+  priv.textContent = "Private class / birthday party";
+  select.appendChild(priv);
+
+  const want = new URLSearchParams(location.search).get("session");
+  if (want) {
+    const match = [...select.options].find((o) => o.dataset.iso === want);
+    if (match) match.selected = true;
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    if (!FORMSPREE_FORM_ID) {
+      note.className = "form-note";
+      note.textContent = "Online booking opens soon — Kay is getting it connected. Check back shortly!";
+      return;
+    }
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Sending…";
+    note.className = "form-note";
+    note.textContent = "";
+    const payload = Object.fromEntries(new FormData(form).entries());
+    try {
+      const res = await fetch(`https://formspree.io/f/${FORMSPREE_FORM_ID}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ ...payload, _subject: `KWK booking request: ${payload.session}` }),
+      });
+      if (!res.ok) throw new Error("send failed");
+      form.reset();
+      note.className = "form-note ok";
+      note.textContent = "Request sent! Kay will confirm your spots by email shortly.";
+    } catch {
+      note.className = "form-note err";
+      note.textContent = "Hmm, that didn't go through. Please try again or reach Kay on Instagram @krafting_w_kay.";
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Send booking request";
+    }
+  });
+}
