@@ -206,9 +206,7 @@ async function renderCreations() {
     const items = await (await fetch("creations.json")).json();
     grid.innerHTML = items.map((c) => `
       <article class="card">
-        ${c.image
-          ? `<img class="card-img" src="${esc(c.image)}" alt="${esc(c.title)}" loading="lazy" />`
-          : `<div class="card-icon">${esc(c.icon || "🌿")}</div>`}
+        ${c.image ? `<img class="card-img" src="${esc(c.image)}" alt="${esc(c.title)}" loading="lazy" />` : ""}
         <h3>${esc(c.title)}</h3>
         <p>${esc(c.description)}</p>
       </article>`).join("");

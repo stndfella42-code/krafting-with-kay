@@ -127,7 +127,7 @@
       <!-- ============ CREATIONS ============ -->
       <div class="section">
         <h2>Creations</h2>
-        <p class="hint">The cards on the homepage. Upload a photo or paste an image link, or keep the little icon.</p>
+        <p class="hint">The cards on the homepage. Upload a photo or paste an image link.</p>
         <div id="cards"></div>
         <button class="btn-ghost" id="addCardBtn" type="button">+ Add a creation</button>
       </div>
@@ -191,8 +191,6 @@ let creations = [];
 let eventsData = null;
 let siteData = {};
 let pendingUploads = {}; // card index -> { name, dataUrl }
-
-const ICONS = ["🏮","🕊️","🧚","🎁","🌿","🌸","🕯️","🦋","🍂","⭐","🎨","🫙"];
 
 /* ---------- time helpers: site stores "3:30 PM", inputs use "15:30" ---------- */
 function to24h(t) {
@@ -313,11 +311,7 @@ function cardEl(c, i) {
   div.className = "card";
   div.innerHTML = `
     <div class="card-head"><h3>Card ${i + 1}</h3><button class="btn-danger" type="button">Remove</button></div>
-    <div class="grid2">
-      <div class="field"><label>Icon (shown if no photo)</label>
-        <select data-f="icon">${ICONS.map((ic) => `<option ${ic === c.icon ? "selected" : ""}>${ic}</option>`).join("")}</select></div>
-      <div class="field"><label>Title</label><input type="text" data-f="title" value="${esc(c.title)}" /></div>
-    </div>
+    <div class="field"><label>Title</label><input type="text" data-f="title" value="${esc(c.title)}" /></div>
     <div class="field"><label>Description</label><textarea data-f="description" style="min-height:64px">${esc(c.description)}</textarea></div>
     <div class="field"><label>Photo link (optional)</label><input type="url" data-f="image" value="${esc(c.image || "")}" placeholder="https://..." /></div>
     <div class="field"><label>Or upload a photo</label><input type="file" data-f="upload" accept="image/*" /></div>
@@ -339,7 +333,7 @@ function cardEl(c, i) {
   return div;
 }
 $("addCardBtn").addEventListener("click", () => {
-  creations.push({ icon: "🌿", title: "New creation", description: "", image: "" });
+  creations.push({ title: "New creation", description: "", image: "" });
   renderCreations();
   setStatus("Unsaved changes.");
 });
@@ -347,7 +341,7 @@ function collectCreations() {
   const cards = $("cards").querySelectorAll(".card");
   return [...cards].map((div, i) => {
     const g = (f) => (div.querySelector(`[data-f="${f}"]`).value || "").trim();
-    return { icon: g("icon"), title: g("title") || "Untitled", description: g("description"), image: g("image") };
+    return { title: g("title") || "Untitled", description: g("description"), image: g("image") };
   });
 }
 
