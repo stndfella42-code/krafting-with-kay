@@ -341,3 +341,13 @@ h3 { font-size: 1.45rem; margin-bottom: 0.4rem; }
   .form-row { grid-template-columns: 1fr; }
   .book-form { padding: 1.4rem; }
 }
+
+/* ---------- KwK wordmark hearts ---------- */
+.kwk { white-space: nowrap; }
+.kwk .kwkh {
+  color: var(--terra);
+  font-size: 0.58em;
+  vertical-align: 0.14em;
+  margin: 0 0.06em;
+  line-height: 1;
+}

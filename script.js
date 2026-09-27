@@ -100,6 +100,35 @@ function sessionTime(s) {
   return s.startTime && s.endTime ? `${s.startTime} to ${s.endTime}` : s.startTime || "";
 }
 
+/* ---------- KwK wordmark hearts ---------- */
+function kwkHearts(s) {
+  return String(s).replace(/KwK/g, '<span class="kwk">K<span class="kwkh">♥</span>w<span class="kwkh">♥</span>K</span>');
+}
+function heartifyKwK(root) {
+  const skip = new Set(["SCRIPT", "STYLE", "TEXTAREA", "INPUT", "OPTION", "SELECT", "TITLE"]);
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const targets = [];
+  let n;
+  while ((n = walker.nextNode())) {
+    const p = n.parentNode;
+    if (!p || skip.has(p.tagName)) continue;
+    if (n.nodeValue.includes("KwK")) targets.push(n);
+  }
+  for (const t of targets) {
+    const frag = document.createDocumentFragment();
+    t.nodeValue.split(/(KwK)/g).forEach((part) => {
+      if (part === "KwK") {
+        const tpl = document.createElement("template");
+        tpl.innerHTML = kwkHearts(part);
+        frag.appendChild(tpl.content);
+      } else {
+        frag.appendChild(document.createTextNode(part));
+      }
+    });
+    t.parentNode.replaceChild(frag, t);
+  }
+}
+
 async function initEvents() {
   const homeList = document.getElementById("upcomingList");
   const calList = document.getElementById("calendarList");
@@ -160,6 +189,7 @@ async function initEvents() {
   }
 
   initBooking(sessions);
+  heartifyKwK(document.body);
 }
 initEvents();
 
@@ -217,6 +247,7 @@ async function loadSite() {
   } catch {
     /* baked-in copy stays as the fallback */
   }
+  heartifyKwK(document.body);
 }
 loadSite();
 
@@ -349,7 +380,7 @@ function initBooking(sessions) {
     }
     if (!FORMSPREE_FORM_ID) {
       note.className = "form-note";
-      note.textContent = "Online booking opens soon. KwK is getting it connected. Check back shortly!";
+      note.innerHTML = kwkHearts("Online booking opens soon. KwK is getting it connected. Check back shortly!");
       return;
     }
     submitBtn.disabled = true;
@@ -384,13 +415,16 @@ function initBooking(sessions) {
       if (!res.ok) throw new Error("send failed");
       form.reset();
       note.className = "form-note ok";
-      note.textContent = "Request sent! KwK will confirm your spots by email shortly.";
+      note.innerHTML = kwkHearts("Request sent! KwK will confirm your spots by email shortly.");
     } catch {
       note.className = "form-note err";
-      note.textContent = "Hmm, that didn't go through. Please try again or reach KwK on Instagram @krafting_w_kay.";
+      note.innerHTML = kwkHearts("Hmm, that didn't go through. Please try again or reach KwK on Instagram @krafting_w_kay.");
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = "Send booking request";
     }
   });
 }
+
+/* hearts on anything rendered after load */
+heartifyKwK(document.body);
