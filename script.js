@@ -1,4 +1,4 @@
-// Krafting with Kay — tiny interactions, no dependencies.
+// Krafting with Kay: tiny interactions, no dependencies.
 
 document.getElementById("year").textContent = new Date().getFullYear();
 
@@ -97,7 +97,7 @@ function buildSessions(data) {
 }
 
 function sessionTime(s) {
-  return s.startTime && s.endTime ? `${s.startTime} – ${s.endTime}` : s.startTime || "";
+  return s.startTime && s.endTime ? `${s.startTime} to ${s.endTime}` : s.startTime || "";
 }
 
 async function initEvents() {
@@ -121,12 +121,12 @@ async function initEvents() {
         <div class="upcoming-date"><strong>${fmtShortDate(s.date)}</strong><span>${sessionTime(s)}</span></div>
         <div class="upcoming-info"><span class="event-tag">${s.tag}</span> ${s.title}</div>
       </div>`).join("") ||
-      '<p class="muted">No sessions scheduled right now — check back soon!</p>';
+      '<p class="muted">No sessions scheduled right now. Check back soon!</p>';
   }
 
   if (calList) {
     if (!sessions.length) {
-      calList.innerHTML = '<p class="muted">No sessions scheduled right now — check back soon!</p>';
+      calList.innerHTML = '<p class="muted">No sessions scheduled right now. Check back soon!</p>';
       return;
     }
     let html = "", lastMonth = "";
@@ -263,9 +263,9 @@ function initBooking(sessions) {
   sessions.forEach((s) => {
     const iso = isoDate(s.date);
     const opt = document.createElement("option");
-    opt.value = `${s.title} — ${fmtDate(s.date)} (${sessionTime(s)})`;
+    opt.value = `${s.title}: ${fmtDate(s.date)} (${sessionTime(s)})`;
     opt.dataset.iso = iso;
-    opt.textContent = `${fmtShortDate(s.date)} — ${s.title} (${sessionTime(s)})`;
+    opt.textContent = `${fmtShortDate(s.date)}: ${s.title} (${sessionTime(s)})`;
     select.appendChild(opt);
   });
   const priv = document.createElement("option");
@@ -321,7 +321,7 @@ function initBooking(sessions) {
     }
     if (!FORMSPREE_FORM_ID) {
       note.className = "form-note";
-      note.textContent = "Online booking opens soon — KwK is getting it connected. Check back shortly!";
+      note.textContent = "Online booking opens soon. KwK is getting it connected. Check back shortly!";
       return;
     }
     submitBtn.disabled = true;
@@ -344,7 +344,7 @@ function initBooking(sessions) {
         customDate.reportValidity();
         return;
       }
-      payload.session = `Custom date — ${fmtDate(parseISODate(customDate.value))}`;
+      payload.session = `Custom date: ${fmtDate(parseISODate(customDate.value))}`;
       delete payload.customDate;
     }
     try {

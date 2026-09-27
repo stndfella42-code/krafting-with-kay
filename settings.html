@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Site Settings — Krafting with Kay</title>
+  <title>Site Settings | Krafting with Kay</title>
   <meta name="robots" content="noindex, nofollow" />
   <link rel="icon" href="assets/logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -83,7 +83,7 @@
 
     <div id="app" hidden>
       <h1>Creations</h1>
-      <p class="sub">Edit the cards on the homepage. Hit save when you're done — the site updates itself in about a minute.</p>
+      <p class="sub">Edit the cards on the homepage. Hit save when you're done. The site updates itself in about a minute.</p>
       <div id="editors"></div>
       <button class="btn btn-ghost" id="addBtn" type="button">+ Add a creation</button>
       <button class="btn" id="saveBtn" type="button">Save changes</button>
@@ -234,7 +234,7 @@
       } catch (e) {
         status.className = "status err";
         status.textContent = e.message === "Bad password"
-          ? "Wrong password — try again."
+          ? "Wrong password. Try again."
           : `Couldn't save: ${e.message}`;
         if (e.message === "Bad password") sessionStorage.removeItem("kwk_admin_pw");
       } finally {
