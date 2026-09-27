@@ -164,7 +164,7 @@ h3 { font-size: 1.45rem; margin-bottom: 0.4rem; }
 .card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(62, 68, 56, 0.1); }
 .card-icon { font-size: 2rem; margin-bottom: 0.8rem; }
 .card-img {
-  display: block; width: 100%; height: auto;
+  display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover;
   border-radius: 12px; margin-bottom: 1.2rem;
 }
 .card p { color: var(--ink-soft); font-size: 0.95rem; font-weight: 300; }
