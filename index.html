@@ -123,6 +123,12 @@
           <label>Phone <span class="muted">(optional)</span>
             <input type="tel" name="phone" autocomplete="tel" placeholder="(303) 555-0123" />
           </label>
+          <div class="addr-wrap">
+            <label>Street address
+              <input type="text" id="addressInput" name="address" required autocomplete="street-address" placeholder="Start typing your address…" />
+            </label>
+            <div id="addressSuggestions" class="addr-suggest" hidden></div>
+          </div>
           <div class="kids-block">
             <span class="kids-heading">Kids attending</span>
             <div id="kidRows"></div>

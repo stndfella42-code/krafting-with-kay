@@ -163,7 +163,66 @@ async function initEvents() {
 }
 initEvents();
 
-/* ---------- booking form ---------- */
+/* ---------- address autocomplete (Photon, no API key needed) ---------- */
+function formatAddr(p) {
+  const street = [p.housenumber, p.street].filter(Boolean).join(" ");
+  const city = p.city || p.town || p.village || "";
+  const region = [city, p.state].filter(Boolean).join(", ");
+  const tail = [region, p.postcode].filter(Boolean).join(" ");
+  return [street || p.name, tail].filter(Boolean).join(", ");
+}
+function initAddressAutocomplete() {
+  const input = document.getElementById("addressInput");
+  const box = document.getElementById("addressSuggestions");
+  if (!input || !box) return;
+  let timer;
+  input.addEventListener("input", () => {
+    clearTimeout(timer);
+    const q = input.value.trim();
+    if (q.length < 4) {
+      box.hidden = true;
+      return;
+    }
+    timer = setTimeout(async () => {
+      try {
+        const url =
+          "https://photon.komoot.io/api/?" +
+          `q=${encodeURIComponent(q)}&limit=5&lang=en&lat=39.7294&lon=-104.8319&location_bias_scale=0.6`;
+        const data = await (await fetch(url)).json();
+        const feats = (data.features || []).filter(
+          (f) => f.properties.countrycode === "US" && (f.properties.housenumber || f.properties.street)
+        );
+        if (!feats.length) {
+          box.hidden = true;
+          return;
+        }
+        box.innerHTML = "";
+        feats.forEach((f) => {
+          const label = formatAddr(f.properties);
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = "addr-opt";
+          b.textContent = label;
+          b.addEventListener("click", () => {
+            input.value = label;
+            box.hidden = true;
+          });
+          box.appendChild(b);
+        });
+        box.hidden = false;
+      } catch {
+        box.hidden = true;
+      }
+    }, 300);
+  });
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") box.hidden = true;
+  });
+  document.addEventListener("click", (e) => {
+    if (!box.contains(e.target) && e.target !== input) box.hidden = true;
+  });
+}
+initAddressAutocomplete();
 function initBooking(sessions) {
   const form = document.getElementById("bookForm");
   if (!form) return;
