@@ -108,7 +108,13 @@ h3 { font-size: 1.45rem; margin-bottom: 0.4rem; }
 .nav-toggle { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--ink); }
 
 /* ---------- hero ---------- */
-.hero { padding: 4.5rem 0 5rem; position: relative; overflow: hidden; }
+.hero { padding: 0 0 5rem; position: relative; overflow: hidden; }
+.floral-band {
+  height: clamp(150px, 24vw, 260px);
+  background: url("assets/floral-band.png") center 25% / cover no-repeat;
+  -webkit-mask-image: linear-gradient(to bottom, black 55%, transparent 98%);
+  mask-image: linear-gradient(to bottom, black 55%, transparent 98%);
+}
 .hero-floral {
   position: absolute; top: -40px; right: -60px; width: min(560px, 80vw);
   mix-blend-mode: multiply; opacity: 0.5; pointer-events: none; user-select: none;
