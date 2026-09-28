@@ -9,7 +9,8 @@
  *     "events.json": {...},
  *     "site.json": {...}
  *   },
- *   images: [{ name, dataUrl }]  // new uploads, data:image/jpeg;base64,...
+ *   images: [{ name, dataUrl, dir }]  // new uploads, data:image/jpeg;base64,...
+ *                                     // dir is assets/creations or assets/gallery
  * }
  *
  * Images referenced by creations cards are stored under assets/creations/.
@@ -22,6 +23,7 @@
  */
 
 const ALLOWED_FILES = ["creations.json", "events.json", "site.json"];
+const ALLOWED_IMAGE_DIRS = ["assets/creations", "assets/gallery"];
 const REPO = process.env.GITHUB_REPO || "stndfella42-code/krafting-with-kay";
 const BRANCH = "main";
 
@@ -48,6 +50,13 @@ function validateFile(name, content) {
   if (name === "site.json") {
     if (!content || typeof content !== "object" || Array.isArray(content))
       return "site must be an object";
+    if (content.gallery !== undefined) {
+      if (!Array.isArray(content.gallery)) return "gallery must be a list";
+      for (const g of content.gallery) {
+        if (!g || typeof g.caption !== "string" || typeof g.image !== "string")
+          return "each gallery item needs a caption and an image field";
+      }
+    }
   }
   return null;
 }
@@ -95,7 +104,7 @@ module.exports = async function handler(req, res) {
 
     const treeItems = [];
 
-    // New image uploads -> assets/creations/<name>
+    // New image uploads -> assets/creations/ or assets/gallery/
     const uploads = Array.isArray(images) ? images : [];
     for (const img of uploads) {
       if (!img || typeof img.name !== "string" || typeof img.dataUrl !== "string") continue;
@@ -103,6 +112,7 @@ module.exports = async function handler(req, res) {
       if (!m) continue;
       const safe = img.name.replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 80);
       if (!safe) continue;
+      const dir = ALLOWED_IMAGE_DIRS.includes(img.dir) ? img.dir : "assets/creations";
       const buf = Buffer.from(m[2], "base64");
       if (!buf.length || buf.length > 8 * 1024 * 1024) continue;
       const blob = await gh(`/repos/${REPO}/git/blobs`, token, {
@@ -110,7 +120,7 @@ module.exports = async function handler(req, res) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: buf.toString("base64"), encoding: "base64" }),
       });
-      treeItems.push({ path: `assets/creations/${safe}`, mode: "100644", type: "blob", sha: blob.sha });
+      treeItems.push({ path: `${dir}/${safe}`, mode: "100644", type: "blob", sha: blob.sha });
     }
 
     // Content files.

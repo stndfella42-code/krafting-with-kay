@@ -275,10 +275,46 @@ async function loadSite() {
       const f = document.getElementById("instaFooter");
       if (f) f.textContent = s.instagramHandle;
     }
+    renderGallery(s.gallery);
   } catch {
     /* baked-in copy stays as the fallback */
   }
   heartifyKwK(document.body);
+}
+
+/* ---------- gallery strip: sideways scroll, tiles link to IG posts ---------- */
+function renderGallery(items) {
+  const strip = document.getElementById("galleryStrip");
+  if (!strip) return;
+  const list = Array.isArray(items) ? items.filter((g) => g && (g.caption || g.image)) : [];
+  strip.innerHTML = "";
+  if (!list.length) {
+    strip.style.display = "none";
+    return;
+  }
+  strip.style.display = "";
+  list.forEach((g, i) => {
+    const hasLink = typeof g.postUrl === "string" && g.postUrl.trim().length > 0;
+    const el = document.createElement(hasLink ? "a" : "div");
+    el.className = "gtile g" + ((i % 6) + 1);
+    if (hasLink) {
+      el.href = g.postUrl.trim();
+      el.target = "_blank";
+      el.rel = "noopener";
+      el.setAttribute("aria-label", (g.caption || "Gallery photo") + " (opens Instagram)");
+    }
+    if (g.image) {
+      const img = document.createElement("img");
+      img.src = g.image;
+      img.alt = g.caption || "";
+      img.loading = "lazy";
+      el.appendChild(img);
+    }
+    const cap = document.createElement("span");
+    cap.textContent = g.caption || "";
+    el.appendChild(cap);
+    strip.appendChild(el);
+  });
 }
 loadSite();
 

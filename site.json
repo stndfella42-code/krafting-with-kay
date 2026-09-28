@@ -3,5 +3,37 @@
   "missionText": "Helping children transform everyday materials into meaningful creations, discovering the value of their ideas, talents, and voices along the way.",
   "monthlyTheme": "Each month has a theme. This season it's all about birds: birdhouses, feeders, and feathered friends. Past projects include dreamy dried-flower mason jar lanterns for back-to-school crafting.",
   "instagramHandle": "@krafting_w_kay",
-  "instagramUrl": "https://www.instagram.com/krafting_w_kay"
+  "instagramUrl": "https://www.instagram.com/krafting_w_kay",
+  "gallery": [
+    {
+      "caption": "Dried flower lantern",
+      "image": "",
+      "postUrl": ""
+    },
+    {
+      "caption": "Bird bath",
+      "image": "",
+      "postUrl": ""
+    },
+    {
+      "caption": "Fairy garden",
+      "image": "",
+      "postUrl": ""
+    },
+    {
+      "caption": "Birdhouse",
+      "image": "",
+      "postUrl": ""
+    },
+    {
+      "caption": "Recycled gift",
+      "image": "",
+      "postUrl": ""
+    },
+    {
+      "caption": "Workshop night",
+      "image": "",
+      "postUrl": ""
+    }
+  ]
 }

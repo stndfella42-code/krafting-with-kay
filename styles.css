@@ -213,23 +213,48 @@ h3 { font-size: 1.45rem; margin-bottom: 0.4rem; }
 #workshops p { margin-bottom: 1rem; max-width: 44rem; font-weight: 300; }
 #workshops p strong { font-weight: 500; }
 
-/* ---------- gallery ---------- */
-.gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin: 2rem 0 1.5rem; }
-.tile {
-  aspect-ratio: 1;
+/* ---------- gallery: sideways scroll strip ---------- */
+.gallery {
+  display: flex; gap: 1rem;
+  overflow-x: auto; overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  margin: 2rem -1.5rem 1.5rem; padding: 0.25rem 1.5rem 1rem;
+  scrollbar-width: thin; scrollbar-color: var(--sage-deep) transparent;
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - 3rem), transparent);
+  mask-image: linear-gradient(to right, black calc(100% - 3rem), transparent);
+}
+.gallery::-webkit-scrollbar { height: 6px; }
+.gallery::-webkit-scrollbar-thumb { background: var(--sage-deep); border-radius: 999px; opacity: 0.6; }
+.gallery::-webkit-scrollbar-track { background: transparent; }
+.gtile {
+  flex: 0 0 min(240px, 70vw);
+  aspect-ratio: 4 / 5;
   border-radius: var(--radius);
+  scroll-snap-align: start;
+  position: relative; overflow: hidden;
   display: flex; align-items: flex-end; justify-content: center;
   padding: 1rem;
   font-weight: 500; font-size: 0.9rem; color: #fff;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.04em; text-decoration: none;
   text-shadow: 0 1px 6px rgba(0,0,0,0.35);
 }
-.t1 { background: linear-gradient(135deg, #a9c39e, #7b8b7a); }
-.t2 { background: linear-gradient(135deg, #be7a4f, #d9a077); }
-.t3 { background: linear-gradient(135deg, #8a8447, #b3ad72); }
-.t4 { background: linear-gradient(135deg, #7b8b7a, #a9c39e); }
-.t5 { background: linear-gradient(135deg, #c98f5f, #be7a4f); }
-.t6 { background: linear-gradient(135deg, #9aa583, #8a8447); }
+a.gtile { cursor: pointer; }
+.gtile img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover;
+}
+.gtile span { position: relative; z-index: 1; text-align: center; }
+.gtile::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(40,36,28,0.45), transparent 45%);
+  pointer-events: none;
+}
+.g1 { background: linear-gradient(135deg, #a9c39e, #7b8b7a); }
+.g2 { background: linear-gradient(135deg, #be7a4f, #d9a077); }
+.g3 { background: linear-gradient(135deg, #8a8447, #b3ad72); }
+.g4 { background: linear-gradient(135deg, #7b8b7a, #a9c39e); }
+.g5 { background: linear-gradient(135deg, #c98f5f, #be7a4f); }
+.g6 { background: linear-gradient(135deg, #9aa583, #8a8447); }
 
 /* ---------- visit ---------- */
 .visit-card {

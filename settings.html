@@ -150,6 +150,18 @@
         </div>
       </div>
 
+      <!-- ============ GALLERY ============ -->
+      <div class="section">
+        <h2>Gallery</h2>
+        <p class="hint">The sideways-scrolling photo strip on the homepage. Add a photo, a caption, and the Instagram post link so visitors can tap through to the post.</p>
+        <div id="gallerySlots"></div>
+        <button class="btn-ghost" id="addGalleryBtn" type="button">+ Add a photo</button>
+        <div class="section-save">
+          <button class="btn" type="button" data-save="gallery">Save gallery</button>
+          <span class="status" data-status></span>
+        </div>
+      </div>
+
       <!-- ============ HOMEPAGE WORDS ============ -->
       <div class="section">
         <h2>Homepage words</h2>
@@ -215,6 +227,7 @@ let creations = [];
 let eventsData = null;
 let siteData = {};
 let pendingUploads = {}; // card index -> { name, dataUrl }
+let galleryUploads = {}; // gallery slot index -> { name, dataUrl, dir }
 
 /* ---------- time helpers: site stores "3:30 PM", inputs use "15:30" ---------- */
 function to24h(t) {
@@ -256,6 +269,7 @@ function renderAll() {
   renderWeekly();
   renderOneOffs();
   renderCreations();
+  renderGallerySlots();
   renderSite();
 }
 
@@ -378,6 +392,51 @@ function collectCreations() {
   });
 }
 
+/* ---------- gallery slots ---------- */
+function renderGallerySlots() {
+  const wrap = $("gallerySlots");
+  wrap.innerHTML = "";
+  (siteData.gallery || []).forEach((g, i) => wrap.appendChild(gallerySlotEl(g, i)));
+}
+function gallerySlotEl(g, i) {
+  const div = document.createElement("div");
+  div.className = "card";
+  div.innerHTML = `
+    <div class="card-head"><h3>Photo ${i + 1}</h3><button class="btn-danger" type="button">Remove</button></div>
+    <div class="field"><label>Caption</label><input type="text" data-f="caption" value="${esc(g.caption || "")}" placeholder="Dried flower lantern" /></div>
+    <div class="field"><label>Instagram post link (optional, tile taps through to it)</label><input type="url" data-f="postUrl" value="${esc(g.postUrl || "")}" placeholder="https://www.instagram.com/p/..." /></div>
+    <div class="field"><label>Photo link (optional)</label><input type="url" data-f="image" value="${esc(g.image || "")}" placeholder="https://..." /></div>
+    <div class="field"><label>Or upload a photo</label><input type="file" data-f="upload" accept="image/*" /></div>
+    ${g.image ? `<img class="thumb" src="${esc(g.image)}" alt="" />` : ""}`;
+  div.querySelector(".btn-danger").addEventListener("click", () => {
+    const sec = div.closest(".section");
+    siteData.gallery.splice(i, 1); delete galleryUploads[i]; renderGallerySlots();
+    setSectionStatus(sec, "Unsaved changes.");
+  });
+  const fileInput = div.querySelector('[data-f="upload"]');
+  fileInput.addEventListener("change", () => {
+    const f = fileInput.files[0];
+    if (!f) return;
+    const rd = new FileReader();
+    rd.onload = () => openCropper(rd.result, i, div, fileInput, "gallery");
+    rd.readAsDataURL(f);
+  });
+  return div;
+}
+$("addGalleryBtn").addEventListener("click", () => {
+  siteData.gallery = siteData.gallery || [];
+  siteData.gallery.push({ caption: "", image: "", postUrl: "" });
+  renderGallerySlots();
+  setSectionStatus($("gallerySlots").closest(".section"), "Unsaved changes.");
+});
+function collectGallery() {
+  const slots = $("gallerySlots").querySelectorAll(".card");
+  return [...slots].map((div) => {
+    const g = (f) => (div.querySelector(`[data-f="${f}"]`).value || "").trim();
+    return { caption: g("caption"), image: g("image"), postUrl: g("postUrl") };
+  }).filter((g) => g.caption || g.image);
+}
+
 /* ---------- image cropper: whole photo visible, fixed 4:3 frame keeps cards uniform ---------- */
 const CROP_W = 1200, CROP_H = 900, CROP_RATIO = CROP_W / CROP_H;
 const cropper = {
@@ -389,7 +448,7 @@ const cropper = {
   pointers: new Map(), pinch: null, last: null,
 };
 
-function openCropper(dataUrl, cardIndex, cardDiv, fileInput) {
+function openCropper(dataUrl, cardIndex, cardDiv, fileInput, kind = "creations") {
   const img = new Image();
   img.onload = () => {
     cropper.img = img;
@@ -398,6 +457,7 @@ function openCropper(dataUrl, cardIndex, cardDiv, fileInput) {
     cropper.cardIndex = cardIndex;
     cropper.cardDiv = cardDiv;
     cropper.fileInput = fileInput;
+    cropper.kind = kind;
     cropper.zoom = 1;
     cropper.pointers.clear();
     cropper.pinch = null;
@@ -576,11 +636,15 @@ function stagePoint(e) {
     }
     const dataUrl = cv.toDataURL("image/jpeg", 0.85);
     const i = cropper.cardIndex;
-    const name = "creation-" + Date.now() + "-" + i + ".jpg";
-    pendingUploads[i] = { name, dataUrl };
+    const kind = cropper.kind || "creations";
+    const prefix = kind === "gallery" ? "gallery-" : "creation-";
+    const dir = kind === "gallery" ? "assets/gallery/" : "assets/creations/";
+    const name = prefix + Date.now() + "-" + i + ".jpg";
+    if (kind === "gallery") galleryUploads[i] = { name, dataUrl, dir };
+    else pendingUploads[i] = { name, dataUrl };
     const div = cropper.cardDiv;
     if (div) {
-      div.querySelector('[data-f="image"]').value = "assets/creations/" + name;
+      div.querySelector('[data-f="image"]').value = dir + name;
       let th = div.querySelector(".thumb");
       if (!th) {
         th = document.createElement("img");
@@ -590,7 +654,8 @@ function stagePoint(e) {
       }
       th.src = dataUrl;
     }
-    setSectionStatus(cropper.cardDiv.closest(".section"), "Photo cropped. Hit Save creations to publish it.");
+    const saveLabel = kind === "gallery" ? "Save gallery" : "Save creations";
+    setSectionStatus(cropper.cardDiv.closest(".section"), "Photo cropped. Hit " + saveLabel + " to publish it.");
     closeCropper();
   });
 })();
@@ -616,7 +681,17 @@ function collectSite() {
 
 /* ---------- save, one section at a time ----------
    Each section writes only its own file, so saving the workshop time
-   can never clobber the creation photos (or vice versa). */
+   can never clobber the creation photos (or vice versa). Sections that
+   share site.json (homepage words, gallery) merge over the live file
+   first, so two tabs can't wipe each other's keys. */
+async function fetchLiveSite() {
+  try {
+    const r = await fetch("site.json", { cache: "no-store" });
+    if (r.ok) return await r.json();
+  } catch { /* fall through to memory */ }
+  return siteData || {};
+}
+
 function setSectionStatus(sec, msg, cls = "") {
   const s = sec ? sec.querySelector("[data-status]") : null;
   if (!s) return;
@@ -655,9 +730,20 @@ async function saveSection(kind, btn) {
       creations = finalCreations;
       pendingUploads = {};
     } else if (kind === "site") {
-      const finalSite = collectSite();
+      // Merge over the live file so a stale tab can't wipe the gallery,
+      // and vice versa for the gallery save below.
+      const live = await fetchLiveSite();
+      const finalSite = { ...live, ...collectSite() };
       files["site.json"] = finalSite;
       siteData = finalSite;
+    } else if (kind === "gallery") {
+      const live = await fetchLiveSite();
+      const finalGallery = collectGallery();
+      const finalSite = { ...live, gallery: finalGallery };
+      files["site.json"] = finalSite;
+      images = Object.values(galleryUploads);
+      siteData = finalSite;
+      galleryUploads = {};
     } else {
       throw new Error("Unknown section.");
     }
@@ -670,6 +756,7 @@ async function saveSection(kind, btn) {
     const data = await res.json().catch(() => ({}));
     if (!res.ok || !data.ok) throw new Error(data.error || "Save failed.");
     if (kind === "creations") renderCreations();
+    if (kind === "gallery") renderGallerySlots();
     setSectionStatus(sec, "Saved. The site updates itself in about a minute.", "ok");
   } catch (e) {
     setSectionStatus(sec, e.message || "Save failed.", "err");
