@@ -333,10 +333,16 @@ button.gtile {
   background-image: url("assets/daisy-footer.webp");
   background-repeat: no-repeat;
   background-position: 50% 100%;
-  background-size: min(1400px, 100%) auto;
+  background-size: min(1400px, 94%) auto;
 }
+/* foreground sprigs: real overlap, flowers cross in front of the card */
+.fl-fg { position: absolute; z-index: 2; pointer-events: none; }
+.fl-fg-a { left: calc(50% - 410px); bottom: 24px; height: 430px; width: auto; }
+.fl-fg-b { right: calc(50% - 420px); top: 24px; height: 330px; width: auto; }
 @media (max-width: 760px) {
-  #visit { background-size: 640px auto; }
+  #visit { background-size: 94% auto; }
+  .fl-fg-a { height: 230px; left: -10px; bottom: 10px; }
+  .fl-fg-b { display: none; }
 }
 
 /* ---------- visit ---------- */
