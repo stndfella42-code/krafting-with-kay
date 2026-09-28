@@ -328,6 +328,17 @@ button.gtile {
 .lightbox-close:hover { background: rgba(255,255,245,0.15); }
 
 /* ---------- stealth admin link: looks like plain footer text ---------- */
+/* ---------- footer floral band: muted daisies, melts into the pale sage ---------- */
+.footer-floral { background: var(--sage-pale); line-height: 0; }
+.footer-floral img {
+  display: block; width: 100%;
+  height: clamp(200px, 28vw, 360px);
+  object-fit: cover; object-position: 50% 100%;
+}
+@media (max-width: 600px) {
+  .footer-floral img { height: auto; }
+}
+
 /* ---------- visit ---------- */
 .visit-card {
   background: var(--paper); border: 1px solid var(--line);
