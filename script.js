@@ -2,6 +2,12 @@
 
 document.getElementById("year").textContent = new Date().getFullYear();
 
+// Transparent header over the hero, solid on scroll
+const header = document.querySelector(".site-header");
+const setHeader = () => header.classList.toggle("scrolled", window.scrollY > 40);
+window.addEventListener("scroll", setHeader, { passive: true });
+setHeader();
+
 // Mobile nav
 const nav = document.getElementById("siteNav");
 const toggle = document.getElementById("navToggle");

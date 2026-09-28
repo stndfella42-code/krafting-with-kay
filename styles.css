@@ -92,11 +92,18 @@ h3 { font-size: 1.45rem; margin-bottom: 0.4rem; }
 
 /* ---------- header ---------- */
 .site-header {
-  position: sticky; top: 0; z-index: 50;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background-color 0.35s ease, border-color 0.35s ease;
+}
+.site-header.scrolled {
   background: color-mix(in srgb, var(--cream) 94%, transparent);
   backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--line);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom-color: var(--line);
 }
+section[id] { scroll-margin-top: 84px; }
 .header-inner { display: flex; align-items: center; justify-content: space-between; height: 76px; }
 .brand { display: flex; align-items: center; gap: 0.8rem; text-decoration: none; color: var(--ink); }
 .brand img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; }
