@@ -1,1 +1,139 @@
-{"accessories":[{"description":"Handmade scrunchies in fun colors and patterns.","id":"scrunchies","images":[],"name":"Scrunchies","price":"$1"},{"description":"Matching sets of colorful hair ties.","id":"hair-tie-sets","images":[],"name":"Hair Tie Sets","price":"$3"},{"description":"Stackable handmade bracelet sets.","id":"bracelet-sets","images":[],"name":"Bracelet Sets","price":"$3"},{"description":"Comfy handmade headbands.","id":"headbands","images":[],"name":"Headbands","price":"$5"},{"description":"Silky boho-style bandannas.","id":"silk-boho-bandannas","images":[],"name":"Silk Boho Bandannas","price":"$8"},{"description":"Classic bandannas in fun prints.","id":"bandannas","images":[],"name":"Bandannas","price":"$8"}],"bundle":{"description":"Mix and match any two DIY kits and save.","name":"Bundle any 2 kits","price":"$15"},"finished":[{"description":"Lovely decorative bird bath with lantern base. Textured gold bowl with rustic twine detail. The lantern opens to showcase your favorite plants or decor. Perfect for patios, gardens, or porches.","id":"decorative-bird-bath","images":[],"name":"Decorative Bird Bath","price":"$45"}],"kits":[{"description":"Create a beautiful lantern to brighten your space.","id":"lantern-kit","images":[],"includes":["Mason jar","LED tea light","Tissue paper","Nature pieces","Twine","Stickers"],"name":"Shine Your Light Lantern Kit","price":"$10"},{"description":"Hang it out and enjoy watching the butterflies.","id":"butterfly-feeder-kit","images":[],"includes":["Nectar cup","Lids (flower bases)","Pipe cleaners","Butterfly wings","Wooden stick","Instructions"],"name":"DIY Butterfly Feeder Kit","price":"$10"},{"description":"Hang it out and enjoy watching the birds.","id":"bird-feeder-kit","images":[],"includes":["Toilet paper roll","Bird seed mix","Twine","Wooden stick","Peanut butter (or alternative)","Instructions"],"name":"DIY Bird Feeder Kit","price":"$10"},{"description":"Build and decorate your own birdhouse.","id":"bird-house-kit","images":[],"includes":[],"name":"Bird House Kit","price":"$10"},{"description":"A little of everything for backyard birds.","id":"mixed-bird-feeder-kit","images":[],"includes":[],"name":"Mixed Bird Feeder Kit","price":"$10"},{"description":"Craft a keepsake wooden ornament.","id":"wooden-ornament-kit","images":[],"includes":[],"name":"Wooden Ornament Kit","price":"$10"}]}
+{
+  "accessories": [
+    {
+      "description": "Handmade scrunchies in fun colors and patterns.",
+      "id": "scrunchies",
+      "images": [],
+      "name": "Scrunchies",
+      "price": "$1"
+    },
+    {
+      "description": "Matching sets of colorful hair ties.",
+      "id": "hair-tie-sets",
+      "images": [],
+      "name": "Hair Tie Sets",
+      "price": "$3"
+    },
+    {
+      "description": "Stackable handmade bracelet sets.",
+      "id": "bracelet-sets",
+      "images": [],
+      "name": "Bracelet Sets",
+      "price": "$3"
+    },
+    {
+      "description": "Comfy handmade headbands.",
+      "id": "headbands",
+      "images": [],
+      "name": "Headbands",
+      "price": "$5"
+    },
+    {
+      "description": "Silky boho-style bandannas.",
+      "id": "silk-boho-bandannas",
+      "images": [],
+      "name": "Silk Boho Bandannas",
+      "price": "$8"
+    },
+    {
+      "description": "Classic bandannas in fun prints.",
+      "id": "bandannas",
+      "images": [],
+      "name": "Bandannas",
+      "price": "$8"
+    }
+  ],
+  "bundle": {
+    "description": "Mix and match any two DIY kits and save.",
+    "name": "Bundle any 2 kits",
+    "price": "$15"
+  },
+  "finished": [
+    {
+      "description": "Lovely decorative bird bath with lantern base. Textured gold bowl with rustic twine detail. The lantern opens to showcase your favorite plants or decor. Perfect for patios, gardens, or porches.",
+      "id": "decorative-bird-bath",
+      "images": [],
+      "name": "Decorative Bird Bath",
+      "price": "$45"
+    }
+  ],
+  "kits": [
+    {
+      "description": "Create a beautiful lantern to brighten your space.",
+      "id": "lantern-kit",
+      "images": [],
+      "includes": [
+        "Mason jar",
+        "LED tea light",
+        "Tissue paper",
+        "Nature pieces",
+        "Twine",
+        "Stickers"
+      ],
+      "name": "Shine Your Light Lantern Kit",
+      "price": "$10"
+    },
+    {
+      "description": "Hang it out and enjoy watching the butterflies.",
+      "id": "butterfly-feeder-kit",
+      "images": [
+        "assets/shop/butterfly-kit-box.jpg",
+        "assets/shop/butterfly-kit-inside.jpg",
+        "assets/shop/butterfly-kit-hanging.jpg"
+      ],
+      "includes": [
+        "Nectar cup",
+        "Lids (flower bases)",
+        "Pipe cleaners",
+        "Butterfly wings",
+        "Wooden stick",
+        "Instructions"
+      ],
+      "name": "DIY Butterfly Feeder Kit",
+      "price": "$10"
+    },
+    {
+      "description": "Hang it out and enjoy watching the birds.",
+      "id": "bird-feeder-kit",
+      "images": [
+        "assets/shop/bird-kit-box.jpg",
+        "assets/shop/bird-kit-inside.jpg",
+        "assets/shop/bird-kit-hanging.jpg"
+      ],
+      "includes": [
+        "Toilet paper roll",
+        "Bird seed mix",
+        "Twine",
+        "Wooden stick",
+        "Peanut butter (or alternative)",
+        "Instructions"
+      ],
+      "name": "DIY Bird Feeder Kit",
+      "price": "$10"
+    },
+    {
+      "description": "Build and decorate your own birdhouse.",
+      "id": "bird-house-kit",
+      "images": [],
+      "includes": [],
+      "name": "Bird House Kit",
+      "price": "$10"
+    },
+    {
+      "description": "A little of everything for backyard birds.",
+      "id": "mixed-bird-feeder-kit",
+      "images": [],
+      "includes": [],
+      "name": "Mixed Bird Feeder Kit",
+      "price": "$10"
+    },
+    {
+      "description": "Craft a keepsake wooden ornament.",
+      "id": "wooden-ornament-kit",
+      "images": [],
+      "includes": [],
+      "name": "Wooden Ornament Kit",
+      "price": "$10"
+    }
+  ]
+}
