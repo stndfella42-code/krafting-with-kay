@@ -318,7 +318,42 @@ function renderGallery(items) {
 }
 loadSite();
 
-/* ---------- address autocomplete (Photon, no API key needed) ---------- */
+/* ---------- gallery auto-scroll: slow drift, pauses when touched ---------- */
+(function initGalleryAutoScroll() {
+  const strip = document.getElementById("galleryStrip");
+  if (!strip) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  let paused = false;
+  let resumeT = null;
+  let snapT = null;
+  const pause = (ms = 6000) => {
+    paused = true;
+    clearTimeout(snapT);
+    strip.style.scrollSnapType = ""; // snap back on for manual swipes
+    clearTimeout(resumeT);
+    resumeT = setTimeout(() => { paused = false; }, ms);
+  };
+  ["pointerdown", "touchstart", "wheel"].forEach((e) =>
+    strip.addEventListener(e, () => pause(), { passive: true })
+  );
+  strip.addEventListener("pointerenter", () => pause(999999));
+  strip.addEventListener("pointerleave", () => pause(2500));
+  strip.addEventListener("focusin", () => pause(999999));
+  strip.addEventListener("focusout", () => pause(2500));
+  setInterval(() => {
+    if (paused || document.hidden) return;
+    if (strip.scrollWidth <= strip.clientWidth + 8) return;
+    // snap fights programmatic scrolling, so drop it just for the drift
+    strip.style.scrollSnapType = "none";
+    clearTimeout(snapT);
+    snapT = setTimeout(() => { strip.style.scrollSnapType = ""; }, 200);
+    if (strip.scrollLeft + strip.clientWidth >= strip.scrollWidth - 8) {
+      strip.scrollTo({ left: 0, behavior: "smooth" });
+    } else {
+      strip.scrollBy({ left: 1 });
+    }
+  }, 40);
+})();
 function formatAddr(p) {
   const street = [p.housenumber, p.street].filter(Boolean).join(" ");
   const city = p.city || p.town || p.village || "";
