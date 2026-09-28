@@ -261,6 +261,7 @@ async function renderCreations() {
         <h3>${esc(c.title)}</h3>
         <p>${esc(c.description)}</p>
       </article>`).join("");
+    loopify(grid);
     grid.querySelectorAll(".card").forEach((el) => {
       el.classList.add("reveal");
       io.observe(el);
@@ -310,6 +311,8 @@ function renderGallery(items) {
     const el = document.createElement("button");
     el.type = "button";
     el.className = "gtile g" + ((i % 6) + 1);
+    el.dataset.image = g.image || "";
+    el.dataset.caption = g.caption || "";
     el.setAttribute("aria-label", (g.caption || "Gallery photo") + " (view larger)");
     if (g.image) {
       const img = document.createElement("img");
@@ -321,9 +324,18 @@ function renderGallery(items) {
     const cap = document.createElement("span");
     cap.textContent = g.caption || "";
     el.appendChild(cap);
-    el.addEventListener("click", () => openLightbox(g.image, g.caption));
     strip.appendChild(el);
   });
+  if (!strip.dataset.lbBound) {
+    strip.addEventListener("click", (e) => {
+      const tile = e.target.closest("button.gtile");
+      if (tile && strip.contains(tile) && tile.dataset.image) {
+        openLightbox(tile.dataset.image, tile.dataset.caption);
+      }
+    });
+    strip.dataset.lbBound = "1";
+  }
+  loopify(strip);
 }
 
 /* ---------- lightbox: keep visitors on the site instead of sending them to IG ---------- */
@@ -357,7 +369,36 @@ function closeLightbox() {
 })();
 loadSite();
 
-/* ---------- auto-scroll: slow drift for sideways strips, pauses when touched ---------- */
+/* ---------- endless loop: duplicate strip content once, then wrap the scroll
+   position seamlessly. Both copies are identical, so the wrap is invisible. ---------- */
+const loopedStrips = [];
+function loopify(strip) {
+  strip.querySelectorAll("[data-clone]").forEach((c) => c.remove());
+  delete strip.dataset.copyW;
+  const kids = [...strip.children];
+  if (!kids.length) return;
+  const gap = parseFloat(getComputedStyle(strip).columnGap) || 0;
+  const copyW = strip.scrollWidth + gap; // one full copy plus the gap into the next
+  kids.forEach((k) => {
+    const c = k.cloneNode(true);
+    c.setAttribute("data-clone", "1");
+    c.setAttribute("aria-hidden", "true");
+    c.querySelectorAll("[id]").forEach((n) => n.removeAttribute("id"));
+    if (c.id) c.removeAttribute("id");
+    if (c.tabIndex >= 0) c.tabIndex = -1;
+    c.querySelectorAll("button, a").forEach((n) => { n.tabIndex = -1; });
+    strip.appendChild(c);
+  });
+  strip.dataset.copyW = String(copyW);
+  if (!loopedStrips.includes(strip)) loopedStrips.push(strip);
+}
+let loopResizeT = null;
+window.addEventListener("resize", () => {
+  clearTimeout(loopResizeT);
+  loopResizeT = setTimeout(() => loopedStrips.forEach(loopify), 250);
+});
+
+/* ---------- auto-scroll: slow endless drift, pauses when touched ---------- */
 function initAutoScroll(strip) {
   if (!strip) return;
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -380,16 +421,14 @@ function initAutoScroll(strip) {
   strip.addEventListener("focusout", () => pause(2500));
   setInterval(() => {
     if (paused || document.hidden) return;
-    if (strip.scrollWidth <= strip.clientWidth + 8) return;
+    const copyW = parseFloat(strip.dataset.copyW);
+    if (!copyW || copyW <= strip.clientWidth + 8) return;
     // snap fights programmatic scrolling, so drop it just for the drift
     strip.style.scrollSnapType = "none";
     clearTimeout(snapT);
     snapT = setTimeout(() => { strip.style.scrollSnapType = ""; }, 200);
-    if (strip.scrollLeft + strip.clientWidth >= strip.scrollWidth - 8) {
-      strip.scrollTo({ left: 0, behavior: "smooth" });
-    } else {
-      strip.scrollBy({ left: 1 });
-    }
+    strip.scrollLeft += 1;
+    if (strip.scrollLeft >= copyW) strip.scrollLeft -= copyW; // seamless wrap
   }, 40);
 }
 initAutoScroll(document.getElementById("galleryStrip"));
