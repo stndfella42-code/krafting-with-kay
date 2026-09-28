@@ -76,11 +76,7 @@
     {
       "description": "Hang it out and enjoy watching the butterflies.",
       "id": "butterfly-feeder-kit",
-      "images": [
-        "assets/shop/butterfly-kit-box.jpg",
-        "assets/shop/butterfly-kit-inside.jpg",
-        "assets/shop/butterfly-kit-hanging.jpg"
-      ],
+      "images": [],
       "includes": [
         "Nectar cup",
         "Lids (flower bases)",
@@ -95,11 +91,7 @@
     {
       "description": "Hang it out and enjoy watching the birds.",
       "id": "bird-feeder-kit",
-      "images": [
-        "assets/shop/bird-kit-box.jpg",
-        "assets/shop/bird-kit-inside.jpg",
-        "assets/shop/bird-kit-hanging.jpg"
-      ],
+      "images": [],
       "includes": [
         "Toilet paper roll",
         "Bird seed mix",
