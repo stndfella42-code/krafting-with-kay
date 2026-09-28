@@ -135,7 +135,7 @@ h3 { font-size: 1.45rem; margin-bottom: 0.4rem; }
 .hero-badge {
   position: relative; flex: none;
   width: clamp(88px, 11vw, 150px);
-  margin-left: clamp(-3rem, -3.5vw, -1rem);
+  margin-left: 0;
 }
 .hero-badge img {
   display: block; width: 100%; aspect-ratio: 1;
@@ -149,7 +149,7 @@ h3 { font-size: 1.45rem; margin-bottom: 0.4rem; }
 .ring-line { fill: none; stroke: var(--sage-deep); stroke-width: 1.5; opacity: 0.65; }
 .ring-text {
   font-family: var(--font-body); font-size: 12.5px; font-weight: 500;
-  letter-spacing: 2px; fill: var(--terracotta);
+  letter-spacing: 2px; fill: var(--clay);
 }
 @keyframes badge-spin { to { transform: rotate(360deg); } }
 .hero-subline {
