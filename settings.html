@@ -49,6 +49,14 @@
     .grid2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
     @media(max-width:560px){.grid2{grid-template-columns:1fr}}
     .thumb{width:100%;max-height:170px;object-fit:cover;border-radius:10px;margin-top:.5rem;display:block}
+    .photo-thumbs{display:flex;flex-wrap:wrap;gap:.5rem;margin:.4rem 0}
+    .photo-thumb{position:relative;width:84px;height:63px;border-radius:8px;overflow:hidden;border:1px solid var(--line)}
+    .photo-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+    .photo-thumb button{position:absolute;top:2px;right:2px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(20,20,20,.65);color:#fff;font-size:14px;line-height:1;cursor:pointer}
+    .photo-add-row{display:flex;flex-direction:column;gap:.5rem}
+    .link-row{display:flex;gap:.5rem}
+    .link-row input{flex:1}
+    .tiny{font-size:.8rem;color:var(--muted)}
     .card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem}
     .card-head h3{margin:0}
     .section-save{display:flex;align-items:center;gap:1rem;margin-top:1.1rem;flex-wrap:wrap}
@@ -150,6 +158,45 @@
         </div>
       </div>
 
+      <!-- ============ SHOP ============ -->
+      <div class="section">
+        <h2>Shop</h2>
+        <p class="hint">DIY kits, finished pieces, and accessories on the Shop page. Add several photos per item and they cycle on the card every 3 seconds.</p>
+        <div class="card">
+          <h3>Bundle deal</h3>
+          <div class="grid2">
+            <div class="field"><label>Name</label><input type="text" id="shop-bundle-name" /></div>
+            <div class="field"><label>Price</label><input type="text" id="shop-bundle-price" placeholder="$15" /></div>
+          </div>
+          <div class="field"><label>Description</label><input type="text" id="shop-bundle-desc" /></div>
+        </div>
+        <h3 style="margin:1.5rem 0 .5rem">DIY Kits</h3>
+        <div id="shopKits"></div>
+        <button class="btn-ghost" id="addKitBtn" type="button">+ Add a kit</button>
+        <h3 style="margin:1.5rem 0 .5rem">Finished pieces</h3>
+        <div id="shopFinished"></div>
+        <button class="btn-ghost" id="addFinishedBtn" type="button">+ Add a finished piece</button>
+        <h3 style="margin:1.5rem 0 .5rem">Accessories &amp; merch</h3>
+        <div id="shopAccessories"></div>
+        <button class="btn-ghost" id="addAccessoryBtn" type="button">+ Add an accessory</button>
+        <div class="section-save">
+          <button class="btn" type="button" data-save="shop">Save shop</button>
+          <span class="status" data-status></span>
+        </div>
+      </div>
+
+      <!-- ============ SERVICES ============ -->
+      <div class="section">
+        <h2>Services</h2>
+        <p class="hint">The cards on the Services page. Each one links to the private booking form.</p>
+        <div id="serviceList"></div>
+        <button class="btn-ghost" id="addServiceBtn" type="button">+ Add a service</button>
+        <div class="section-save">
+          <button class="btn" type="button" data-save="services">Save services</button>
+          <span class="status" data-status></span>
+        </div>
+      </div>
+
       <!-- ============ GALLERY ============ -->
       <div class="section">
         <h2>Gallery</h2>
@@ -247,12 +294,14 @@ const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":
 /* ---------- load ---------- */
 async function load() {
   try {
-    const [c, e, s] = await Promise.all([
+    const [c, e, s, sh, sv] = await Promise.all([
       fetch("creations.json").then((r) => { if (!r.ok) throw 0; return r.json(); }),
       fetch("events.json").then((r) => { if (!r.ok) throw 0; return r.json(); }),
       fetch("site.json").then((r) => { if (!r.ok) throw 0; return r.json(); }),
+      fetch("shop.json").then((r) => { if (!r.ok) throw 0; return r.json(); }),
+      fetch("services.json").then((r) => { if (!r.ok) throw 0; return r.json(); }),
     ]);
-    creations = c; eventsData = e; siteData = s;
+    creations = c; eventsData = e; siteData = s; shopData = sh; servicesData = sv;
     renderAll();
     $("panel").hidden = false;
   } catch {
@@ -266,6 +315,8 @@ function renderAll() {
   renderWeekly();
   renderOneOffs();
   renderCreations();
+  renderShop();
+  renderServices();
   renderGallerySlots();
   renderSite();
 }
@@ -431,6 +482,174 @@ function collectGallery() {
     const g = (f) => (div.querySelector(`[data-f="${f}"]`).value || "").trim();
     return { caption: g("caption"), image: g("image") };
   }).filter((g) => g.caption || g.image);
+}
+
+/* ---------- shop ---------- */
+let shopData = { kits: [], finished: [], accessories: [], bundle: {} };
+let servicesData = [];
+let shopUploads = {}; // photoKey -> { name, dataUrl, dir }
+const slug = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "item";
+const shopGroups = { kits: "shopKits", finished: "shopFinished", accessories: "shopAccessories" };
+const shopGroupLabel = { kits: "Kit", finished: "Finished piece", accessories: "Accessory" };
+
+function shopItemEl(group, item, gi) {
+  const div = document.createElement("div");
+  div.className = "card";
+  div._itemId = item.id;
+  div._images = item.images = item.images || [];
+  const isKit = group === "kits";
+  div.innerHTML = `
+    <div class="card-head"><h3 style="font-size:1.05rem">${shopGroupLabel[group]} ${gi + 1}</h3>
+      <button class="btn-danger" type="button">Remove</button></div>
+    <div class="grid2">
+      <div class="field"><label>Name</label><input type="text" data-f="name" value="${esc(item.name || "")}" /></div>
+      <div class="field"><label>Price</label><input type="text" data-f="price" value="${esc(item.price || "")}" placeholder="$10" /></div>
+    </div>
+    <div class="field"><label>Description</label><textarea data-f="description" style="min-height:64px">${esc(item.description || "")}</textarea></div>
+    ${isKit ? `<div class="field"><label>Kit includes (one per line)</label><textarea data-f="includes" style="min-height:64px">${esc((item.includes || []).join("\n"))}</textarea></div>` : ""}
+    <div class="field"><label>Photos <span class="tiny">they cycle every 3 seconds on the card</span></label>
+      <div class="photo-thumbs"></div>
+      <div class="photo-add-row">
+        <input type="file" data-f="upload" accept="image/*" />
+        <div class="link-row"><input type="url" data-f="link" placeholder="Or paste an image link…" /><button class="btn-ghost" type="button" data-f="addlink">Add</button></div>
+      </div>
+    </div>`;
+  const dropUpload = (src) => {
+    const base = String(src).split("/").pop();
+    Object.keys(shopUploads).forEach((k) => { if (shopUploads[k].name === base) delete shopUploads[k]; });
+  };
+  const renderThumbs = () => {
+    const thumbs = div.querySelector(".photo-thumbs");
+    thumbs.innerHTML = "";
+    div._images.forEach((src, pi) => {
+      const t = document.createElement("div");
+      t.className = "photo-thumb";
+      t.innerHTML = `<img src="${esc(src)}" alt="" /><button type="button" aria-label="Remove photo">&times;</button>`;
+      t.querySelector("button").addEventListener("click", () => {
+        div._images.splice(pi, 1);
+        dropUpload(src);
+        renderThumbs();
+        setSectionStatus(div.closest(".section"), "Unsaved changes.");
+      });
+      thumbs.appendChild(t);
+    });
+  };
+  div._renderThumbs = renderThumbs;
+  renderThumbs();
+  div.querySelector(".btn-danger").addEventListener("click", () => {
+    const sec = div.closest(".section");
+    div._images.forEach(dropUpload);
+    shopData[group].splice(gi, 1);
+    renderShop();
+    setSectionStatus(sec, "Unsaved changes.");
+  });
+  const fileInput = div.querySelector('[data-f="upload"]');
+  fileInput.addEventListener("change", () => {
+    const f = fileInput.files[0];
+    if (!f) return;
+    const rd = new FileReader();
+    rd.onload = () => openCropper(rd.result, group + ":" + gi, div, fileInput, "shop");
+    rd.readAsDataURL(f);
+  });
+  div.querySelector('[data-f="addlink"]').addEventListener("click", () => {
+    const inp = div.querySelector('[data-f="link"]');
+    const url = inp.value.trim();
+    if (!url) return;
+    div._images.push(url);
+    inp.value = "";
+    renderThumbs();
+    setSectionStatus(div.closest(".section"), "Unsaved changes.");
+  });
+  return div;
+}
+function renderShop() {
+  const b = shopData.bundle || {};
+  $("shop-bundle-name").value = b.name || "";
+  $("shop-bundle-price").value = b.price || "";
+  $("shop-bundle-desc").value = b.description || "";
+  Object.entries(shopGroups).forEach(([group, id]) => {
+    const wrap = $(id);
+    wrap.innerHTML = "";
+    (shopData[group] || []).forEach((item, gi) => wrap.appendChild(shopItemEl(group, item, gi)));
+  });
+}
+function addShopItem(group, seed) {
+  shopData[group] = shopData[group] || [];
+  shopData[group].push(seed);
+  renderShop();
+  setSectionStatus($(shopGroups[group]).closest(".section"), "Unsaved changes.");
+}
+$("addKitBtn").addEventListener("click", () => addShopItem("kits", { name: "New kit", price: "$10", description: "", images: [], includes: [] }));
+$("addFinishedBtn").addEventListener("click", () => addShopItem("finished", { name: "New finished piece", price: "", description: "", images: [] }));
+$("addAccessoryBtn").addEventListener("click", () => addShopItem("accessories", { name: "New accessory", price: "", description: "", images: [] }));
+function collectShop() {
+  const get = (group, withIncludes) => [...$(shopGroups[group]).querySelectorAll(".card")].map((div) => {
+    const g = (f) => (div.querySelector(`[data-f="${f}"]`).value || "").trim();
+    const item = {
+      id: div._itemId || slug(g("name")),
+      name: g("name") || "Untitled",
+      price: g("price"),
+      description: g("description"),
+      images: [...(div._images || [])],
+    };
+    if (withIncludes) {
+      item.includes = div.querySelector('[data-f="includes"]').value.split("\n").map((s) => s.trim()).filter(Boolean);
+    }
+    return item;
+  });
+  return {
+    kits: get("kits", true),
+    finished: get("finished", false),
+    accessories: get("accessories", false),
+    bundle: {
+      name: $("shop-bundle-name").value.trim(),
+      price: $("shop-bundle-price").value.trim(),
+      description: $("shop-bundle-desc").value.trim(),
+    },
+  };
+}
+
+/* ---------- services ---------- */
+function serviceEl(s, si) {
+  const div = document.createElement("div");
+  div.className = "card";
+  div._serviceId = s.id;
+  div.innerHTML = `
+    <div class="card-head"><h3 style="font-size:1.05rem">Service ${si + 1}</h3>
+      <button class="btn-danger" type="button">Remove</button></div>
+    <div class="field"><label>Name</label><input type="text" data-f="name" value="${esc(s.name || "")}" /></div>
+    <div class="field"><label>Tagline</label><input type="text" data-f="tagline" value="${esc(s.tagline || "")}" /></div>
+    <div class="field"><label>Details (one per line)</label><textarea data-f="details" style="min-height:64px">${esc((s.details || []).join("\n"))}</textarea></div>
+    <div class="field"><label>Note</label><input type="text" data-f="note" value="${esc(s.note || "")}" /></div>`;
+  div.querySelector(".btn-danger").addEventListener("click", () => {
+    const sec = div.closest(".section");
+    servicesData.splice(si, 1);
+    renderServices();
+    setSectionStatus(sec, "Unsaved changes.");
+  });
+  return div;
+}
+function renderServices() {
+  const wrap = $("serviceList");
+  wrap.innerHTML = "";
+  servicesData.forEach((s, si) => wrap.appendChild(serviceEl(s, si)));
+}
+$("addServiceBtn").addEventListener("click", () => {
+  servicesData.push({ name: "New service", tagline: "", details: [], note: "" });
+  renderServices();
+  setSectionStatus($("serviceList").closest(".section"), "Unsaved changes.");
+});
+function collectServices() {
+  return [...$("serviceList").querySelectorAll(".card")].map((div) => {
+    const g = (f) => (div.querySelector(`[data-f="${f}"]`).value || "").trim();
+    return {
+      id: div._serviceId || slug(g("name")),
+      name: g("name") || "Untitled",
+      tagline: g("tagline"),
+      details: div.querySelector('[data-f="details"]').value.split("\n").map((x) => x.trim()).filter(Boolean),
+      note: g("note"),
+    };
+  });
 }
 
 /* ---------- image cropper: whole photo visible, fixed 4:3 frame keeps cards uniform ---------- */
@@ -633,12 +852,29 @@ function stagePoint(e) {
     const dataUrl = cv.toDataURL("image/jpeg", 0.85);
     const i = cropper.cardIndex;
     const kind = cropper.kind || "creations";
+    const div = cropper.cardDiv;
+    if (kind === "shop") {
+      const [group, gi] = String(i).split(":");
+      const dir = "assets/shop/";
+      const name = "shop-" + Date.now() + ".jpg";
+      const key = "shop-" + Date.now() + "-" + Math.floor(Math.random() * 1e6);
+      shopUploads[key] = { name, dataUrl, dir };
+      const item = (shopData[group] || [])[+gi];
+      if (item) {
+        item.images = item.images || [];
+        item.images.push(dir + name);
+        if (div) div._images = item.images;
+      }
+      if (div && div._renderThumbs) div._renderThumbs();
+      setSectionStatus(div.closest(".section"), "Photo cropped. Hit Save shop to publish it.");
+      closeCropper();
+      return;
+    }
     const prefix = kind === "gallery" ? "gallery-" : "creation-";
     const dir = kind === "gallery" ? "assets/gallery/" : "assets/creations/";
     const name = prefix + Date.now() + "-" + i + ".jpg";
     if (kind === "gallery") galleryUploads[i] = { name, dataUrl, dir };
     else pendingUploads[i] = { name, dataUrl };
-    const div = cropper.cardDiv;
     if (div) {
       div.querySelector('[data-f="image"]').value = dir + name;
       let th = div.querySelector(".thumb");
@@ -738,6 +974,16 @@ async function saveSection(kind, btn) {
       images = Object.values(galleryUploads);
       siteData = finalSite;
       galleryUploads = {};
+    } else if (kind === "shop") {
+      const finalShop = collectShop();
+      files["shop.json"] = finalShop;
+      images = Object.values(shopUploads);
+      shopData = finalShop;
+      shopUploads = {};
+    } else if (kind === "services") {
+      const finalServices = collectServices();
+      files["services.json"] = finalServices;
+      servicesData = finalServices;
     } else {
       throw new Error("Unknown section.");
     }
@@ -751,6 +997,8 @@ async function saveSection(kind, btn) {
     if (!res.ok || !data.ok) throw new Error(data.error || "Save failed.");
     if (kind === "creations") renderCreations();
     if (kind === "gallery") renderGallerySlots();
+    if (kind === "shop") renderShop();
+    if (kind === "services") renderServices();
     setSectionStatus(sec, "Saved. The site updates itself in about a minute.", "ok");
   } catch (e) {
     setSectionStatus(sec, e.message || "Save failed.", "err");

@@ -297,6 +297,86 @@ section[id] { scroll-margin-top: 84px; }
 }
 .card p { color: var(--ink-soft); font-size: 0.95rem; font-weight: 300; }
 
+/* ---------- shop ---------- */
+.shop-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.4rem; margin-top: 2rem;
+}
+.shop-card { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+.shop-card-body { padding: 1.4rem 1.3rem 1.5rem; display: flex; flex-direction: column; gap: 0.6rem; flex: 1; }
+.shop-card-body p { margin: 0; }
+.shop-card-top { display: flex; justify-content: space-between; align-items: baseline; gap: 0.8rem; }
+.shop-card-top h3 { margin: 0; font-size: 1.25rem; }
+.price {
+  font-family: var(--font-body); font-weight: 500; color: var(--paper);
+  background: var(--sage-deep); border-radius: 999px; padding: 0.25rem 0.8rem;
+  font-size: 0.95rem; white-space: nowrap;
+}
+.kit-includes { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.kit-includes li {
+  font-size: 0.8rem; font-weight: 400; color: var(--ink-soft);
+  background: var(--cream); border: 1px solid var(--line);
+  border-radius: 999px; padding: 0.2rem 0.7rem;
+}
+.shop-card .btn { margin-top: auto; align-self: flex-start; }
+
+/* photo cycling: one frame, photos crossfade every 3s */
+.photo-cycle { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: var(--cream); }
+.photo-cycle-img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  opacity: 0; transition: opacity 0.6s ease;
+}
+.photo-cycle-img.active { opacity: 1; }
+.photo-cycle-img:first-child { position: relative; }
+.photo-dots {
+  position: absolute; bottom: 0.6rem; left: 0; right: 0;
+  display: flex; justify-content: center; gap: 0.45rem;
+}
+.photo-dots button {
+  width: 0.6rem; height: 0.6rem; border-radius: 50%;
+  border: 2px solid var(--paper); background: rgba(255,255,245,.45);
+  padding: 0; cursor: pointer;
+}
+.photo-dots button.active { background: var(--paper); }
+.photo-placeholder {
+  aspect-ratio: 4 / 3; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--sage) 0%, var(--sage-deep) 100%);
+}
+.photo-placeholder span {
+  font-family: var(--font-display); font-size: 2.2rem; color: var(--paper);
+  opacity: 0.85; letter-spacing: 0.08em;
+}
+
+/* bundle banner */
+.bundle-banner {
+  margin-top: 1.6rem; background: var(--sage-deep); color: var(--paper);
+  border-radius: var(--radius); padding: 1.6rem 1.8rem;
+  display: flex; align-items: center; justify-content: space-between; gap: 1.2rem; flex-wrap: wrap;
+}
+.bundle-inner h3 { margin: 0 0 0.3rem; color: var(--paper); }
+.bundle-inner p { margin: 0; color: var(--paper); opacity: 0.85; font-weight: 300; }
+.bundle-price {
+  font-family: var(--font-display); font-size: 2.4rem; color: var(--paper);
+}
+.bundle-banner .btn { background: var(--paper); color: var(--sage-deep); }
+
+/* services */
+.services-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 1.4rem; margin-top: 2rem;
+}
+.service-card { display: flex; flex-direction: column; gap: 0.6rem; }
+.service-card h3 { margin: 0; }
+.service-card p { margin: 0; }
+.service-tagline { font-style: italic; }
+.service-card .btn { margin-top: auto; align-self: flex-start; }
+
+/* scan to pay */
+.scan-pay-img {
+  width: min(340px, 90%); border-radius: var(--radius);
+  box-shadow: 0 12px 28px rgba(62,68,56,.16);
+}
+
 /* ---------- workshops ---------- */
 .workshop-box {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -546,6 +626,10 @@ button.gtile {
 #bookSubmit:disabled { opacity: 0.6; cursor: wait; }
 
 /* ---------- responsive ---------- */
+@media (max-width: 1020px) {
+  .site-nav { gap: 1rem; }
+  .site-nav a:not(.btn) { font-size: 0.82rem; letter-spacing: 0.04em; }
+}
 @media (max-width: 760px) {
   .split { grid-template-columns: 1fr; gap: 2rem; }
   .nav-toggle { display: block; }

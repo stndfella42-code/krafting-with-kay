@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Creations | Krafting with Kay</title>
-  <meta name="description" content="Upcycled, handmade creations from Krafting with Kay workshops in Aurora, CO." />
+  <title>Order | Krafting with Kay</title>
+  <meta name="description" content="Order DIY kits, finished pieces, and merch from Krafting with Kay. Text your order and pay with Venmo or PayPal." />
   <link rel="icon" href="assets/logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -36,22 +36,37 @@
     <section class="hero" style="padding-bottom:2.5rem">
       <div class="floral-band" aria-hidden="true"></div>
       <div class="wrap hero-inner" style="padding-top:2rem">
-        <p class="eyebrow">Upcycled &amp; handmade</p>
-        <h1>Creations</h1>
-        <p class="tagline">Everyday materials, reimagined by little hands.</p>
+        <p class="eyebrow">Made with love by Kay &amp; Mom</p>
+        <h1>Order</h1>
+        <p class="tagline">Fill this out, text it to us, and pay with Venmo or PayPal.</p>
       </div>
     </section>
 
     <section class="section" style="padding-top:1.5rem">
-      <div class="wrap">
-        <div class="creations-grid" id="creationsGrid">
-          <p class="muted">Loading…</p>
-        </div>
-        <div class="visit-card center" style="margin-top:3rem">
-          <p class="eyebrow">Want to make one?</p>
-          <h2 style="font-size:1.8rem">Come kraft with us</h2>
-          <p class="lede" style="margin:0 auto 1.5rem">Join a Wednesday open krafting session or book a private class and take your own creation home.</p>
-          <a class="btn" href="book.html">Book with KwK</a>
+      <div class="wrap" style="max-width:36rem">
+        <form id="orderForm" class="book-form">
+          <label>Your name
+            <input type="text" id="orderName" required autocomplete="name" />
+          </label>
+          <label>Your phone
+            <input type="tel" id="orderPhone" required autocomplete="tel" />
+          </label>
+          <label>Item
+            <select id="orderItem" required>
+              <option value="" disabled selected>Choose an item…</option>
+            </select>
+          </label>
+          <label>Quantity
+            <input type="number" id="orderQty" min="1" value="1" required />
+          </label>
+          <label>Notes <span class="muted">(optional)</span>
+            <textarea id="orderNotes" rows="3" placeholder="Bundle choices, pickup timing, questions…"></textarea>
+          </label>
+          <button type="submit" class="btn" id="orderSubmit">Text your order</button>
+          <p class="muted small" style="margin-top:1rem">This opens a text to (720) 427-3471 with your order filled in. Just hit send. We will confirm and share Venmo or PayPal payment details. Pickup in Aurora, CO.</p>
+        </form>
+        <div class="center" style="margin-top:2rem">
+          <img src="assets/scan-to-pay.png" alt="Scan to pay with Venmo or PayPal: @Krafting_w_Kay" class="scan-pay-img" loading="lazy" />
         </div>
       </div>
     </section>

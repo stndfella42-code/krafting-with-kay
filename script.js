@@ -673,3 +673,167 @@ heartifyKwK(document.body);
     }, 3400);
   });
 })();
+
+/* ---------- shop: kits, finished pieces, accessories ---------- */
+function photoCycleHTML(images, alt) {
+  const imgs = (images || []).filter(Boolean);
+  if (!imgs.length) {
+    return `<div class="photo-placeholder" aria-hidden="true"><span>KwK</span></div>`;
+  }
+  const tags = imgs.map((src, i) =>
+    `<img class="photo-cycle-img${i === 0 ? " active" : ""}" src="${esc(src)}" alt="${esc(alt)}" loading="lazy" />`
+  ).join("");
+  const dots = imgs.length > 1
+    ? `<div class="photo-dots">${imgs.map((_, i) =>
+        `<button type="button" class="${i === 0 ? "active" : ""}" data-i="${i}" aria-label="Photo ${i + 1}"></button>`
+      ).join("")}</div>`
+    : "";
+  return `<div class="photo-cycle" data-count="${imgs.length}">${tags}${dots}</div>`;
+}
+
+function shopCardHTML(item, showIncludes) {
+  const includes = showIncludes && item.includes && item.includes.length
+    ? `<ul class="kit-includes">${item.includes.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`
+    : "";
+  return `
+    <article class="card shop-card">
+      ${photoCycleHTML(item.images, item.name)}
+      <div class="shop-card-body">
+        <div class="shop-card-top"><h3>${esc(item.name)}</h3><span class="price">${esc(item.price)}</span></div>
+        ${item.description ? `<p>${esc(item.description)}</p>` : ""}
+        ${includes}
+        <a class="btn btn-small" href="order.html?item=${encodeURIComponent(item.id)}">Order</a>
+      </div>
+    </article>`;
+}
+
+function initPhotoCycles(root) {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  root.querySelectorAll(".photo-cycle").forEach((cycle) => {
+    const imgs = cycle.querySelectorAll(".photo-cycle-img");
+    const dots = cycle.querySelectorAll(".photo-dots button");
+    if (imgs.length < 2) return;
+    let i = 0, timer = null;
+    const show = (n) => {
+      i = (n + imgs.length) % imgs.length;
+      imgs.forEach((img, k) => img.classList.toggle("active", k === i));
+      dots.forEach((d, k) => d.classList.toggle("active", k === i));
+    };
+    const start = () => { stop(); timer = setInterval(() => show(i + 1), 3000); };
+    const stop = () => { if (timer) clearInterval(timer); timer = null; };
+    dots.forEach((d) => d.addEventListener("click", (e) => { e.stopPropagation(); show(+d.dataset.i); start(); }));
+    cycle.addEventListener("mouseenter", stop);
+    cycle.addEventListener("mouseleave", start);
+    cycle.addEventListener("touchstart", stop, { passive: true });
+    start();
+  });
+}
+
+async function renderShop() {
+  const kitsGrid = document.getElementById("kitsGrid") || document.getElementById("homeKitsGrid");
+  if (!kitsGrid && !document.getElementById("finishedGrid")) return;
+  let data;
+  try {
+    data = await (await fetch("shop.json")).json();
+  } catch {
+    ["kitsGrid", "homeKitsGrid", "finishedGrid", "accessoriesGrid"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = '<p class="muted">Check back soon!</p>';
+    });
+    return;
+  }
+  const paint = (id, items, showIncludes) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = items.map((it) => shopCardHTML(it, showIncludes)).join("") || '<p class="muted">Check back soon!</p>';
+    initPhotoCycles(el);
+    el.querySelectorAll(".card").forEach((c) => { c.classList.add("reveal"); io.observe(c); });
+  };
+  paint("kitsGrid", data.kits, true);
+  paint("homeKitsGrid", data.kits, false);
+  paint("finishedGrid", data.finished, false);
+  paint("accessoriesGrid", data.accessories, false);
+  const banner = document.getElementById("bundleBanner");
+  if (banner && data.bundle) {
+    banner.innerHTML = `
+      <div class="bundle-inner">
+        <div><h3>${esc(data.bundle.name)}</h3><p>${esc(data.bundle.description)}</p></div>
+        <span class="bundle-price">${esc(data.bundle.price)}</span>
+      </div>
+      <a class="btn" href="order.html?item=bundle">Order the bundle</a>`;
+  }
+}
+renderShop();
+
+/* ---------- services ---------- */
+async function renderServices() {
+  const grid = document.getElementById("servicesGrid");
+  if (!grid) return;
+  try {
+    const items = await (await fetch("services.json")).json();
+    grid.innerHTML = items.map((s) => `
+      <article class="card service-card">
+        <h3>${esc(s.name)}</h3>
+        ${s.tagline ? `<p class="service-tagline">${esc(s.tagline)}</p>` : ""}
+        ${(s.details || []).length ? `<ul class="kit-includes">${s.details.map((d) => `<li>${esc(d)}</li>`).join("")}</ul>` : ""}
+        ${s.note ? `<p class="muted small">${esc(s.note)}</p>` : ""}
+        <a class="btn btn-small" href="book.html?session=private">Book this</a>
+      </article>`).join("");
+    grid.querySelectorAll(".card").forEach((c) => { c.classList.add("reveal"); io.observe(c); });
+  } catch {
+    grid.innerHTML = '<p class="muted">Check back soon!</p>';
+  }
+}
+renderServices();
+
+/* ---------- order page: text-your-order via SMS ---------- */
+async function initOrderPage() {
+  const form = document.getElementById("orderForm");
+  if (!form) return;
+  const select = document.getElementById("orderItem");
+  const params = new URLSearchParams(location.search);
+  const wanted = params.get("item");
+  let options = [];
+  try {
+    const data = await (await fetch("shop.json")).json();
+    const groups = [
+      ["DIY Kits", data.kits],
+      ["Finished Pieces", data.finished],
+      ["Accessories & Merch", data.accessories],
+    ];
+    groups.forEach(([label, items]) => {
+      (items || []).forEach((it) => options.push({ id: it.id, label: `${it.name} (${it.price})`, group: label }));
+    });
+    if (data.bundle) options.push({ id: "bundle", label: `${data.bundle.name} (${data.bundle.price})`, group: "Bundles" });
+  } catch { /* leave the fallback option */ }
+  let lastGroup = "";
+  options.forEach((o) => {
+    if (o.group !== lastGroup) {
+      const og = document.createElement("optgroup");
+      og.label = o.group;
+      select.appendChild(og);
+      lastGroup = o.group;
+    }
+    const opt = document.createElement("option");
+    opt.value = o.id;
+    opt.textContent = o.label;
+    if (o.id === wanted) opt.selected = true;
+    select.lastChild.appendChild(opt);
+  });
+  if (wanted === "bundle" && !options.some((o) => o.id === "bundle")) {
+    const opt = document.createElement("option");
+    opt.value = "bundle"; opt.textContent = "Bundle"; opt.selected = true;
+    select.appendChild(opt);
+  }
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = document.getElementById("orderName").value.trim();
+    const phone = document.getElementById("orderPhone").value.trim();
+    const item = select.options[select.selectedIndex].textContent;
+    const qty = document.getElementById("orderQty").value;
+    const notes = document.getElementById("orderNotes").value.trim();
+    const body = `Hi KwK! I would like to order:%0A${encodeURIComponent(qty + " x " + item)}%0AName: ${encodeURIComponent(name)}%0APhone: ${encodeURIComponent(phone)}${notes ? "%0ANotes: " + encodeURIComponent(notes) : ""}`;
+    location.href = `sms:+17204273471?body=${body}`;
+  });
+}
+initOrderPage();

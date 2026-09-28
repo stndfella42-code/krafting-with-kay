@@ -23,7 +23,7 @@
  */
 
 const ALLOWED_FILES = ["creations.json", "events.json", "site.json"];
-const ALLOWED_IMAGE_DIRS = ["assets/creations", "assets/gallery"];
+const ALLOWED_IMAGE_DIRS = ["assets/creations", "assets/gallery", "assets/shop"];
 const REPO = process.env.GITHUB_REPO || "stndfella42-code/krafting-with-kay";
 const BRANCH = "main";
 
