@@ -51,9 +51,7 @@
     .thumb{width:100%;max-height:170px;object-fit:cover;border-radius:10px;margin-top:.5rem;display:block}
     .card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem}
     .card-head h3{margin:0}
-    .savebar{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,245,.97);
-      border-top:1px solid var(--line);padding:.9rem 0;box-shadow:0 -6px 20px rgba(62,58,50,.08);z-index:50}
-    .savebar .wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem}
+    .section-save{display:flex;align-items:center;gap:1rem;margin-top:1.1rem;flex-wrap:wrap}
     .status{font-size:.9rem;color:var(--muted)}
     .status.ok{color:var(--olive)} .status.err{color:#a33}
     .divider{border:0;border-top:1px dashed var(--line);margin:1.1rem 0}
@@ -134,6 +132,10 @@
           <div id="oneOffList"></div>
           <p class="tiny">One-time workshops, holiday events, pop-ups. Leave the list empty if there are none right now.</p>
         </div>
+        <div class="section-save">
+          <button class="btn" type="button" data-save="events">Save sessions</button>
+          <span class="status" data-status></span>
+        </div>
       </div>
 
       <!-- ============ CREATIONS ============ -->
@@ -142,6 +144,10 @@
         <p class="hint">The cards on the homepage. Upload a photo or paste an image link.</p>
         <div id="cards"></div>
         <button class="btn-ghost" id="addCardBtn" type="button">+ Add a creation</button>
+        <div class="section-save">
+          <button class="btn" type="button" data-save="creations">Save creations</button>
+          <span class="status" data-status></span>
+        </div>
       </div>
 
       <!-- ============ HOMEPAGE WORDS ============ -->
@@ -152,6 +158,10 @@
           <div class="field"><label>Hero paragraph (under the big title)</label><textarea id="site-heroLede"></textarea></div>
           <div class="field"><label>Mission paragraph</label><textarea id="site-mission"></textarea></div>
           <div class="field"><label>Monthly theme paragraph</label><textarea id="site-theme"></textarea></div>
+        </div>
+        <div class="section-save">
+          <button class="btn" type="button" data-save="site">Save homepage &amp; Instagram</button>
+          <span class="status" data-status></span>
         </div>
       </div>
 
@@ -165,16 +175,13 @@
             <div class="field"><label>Profile link</label><input type="url" id="site-igUrl" placeholder="https://www.instagram.com/..." /></div>
           </div>
         </div>
+        <div class="section-save">
+          <button class="btn" type="button" data-save="site">Save homepage &amp; Instagram</button>
+          <span class="status" data-status></span>
+        </div>
       </div>
 
       <div style="height:1rem"></div>
-    </div>
-  </div>
-
-  <div class="savebar" id="savebar" hidden>
-    <div class="wrap">
-      <span class="status" id="status">Ready.</span>
-      <button class="btn" id="saveBtn">Save all changes</button>
     </div>
   </div>
 
@@ -238,7 +245,6 @@ async function load() {
     creations = c; eventsData = e; siteData = s;
     renderAll();
     $("panel").hidden = false;
-    $("savebar").hidden = false;
   } catch {
     document.querySelector(".wrap").insertAdjacentHTML("beforeend",
       '<p class="err" style="margin-top:1rem">Could not load the site data. Check your connection and refresh.</p>');
@@ -251,8 +257,15 @@ function renderAll() {
   renderOneOffs();
   renderCreations();
   renderSite();
-  setStatus("Ready.");
 }
+
+/* any edit inside a section marks that section as having unsaved changes */
+["input", "change"].forEach((evt) =>
+  $("panel").addEventListener(evt, (e) => {
+    const sec = e.target.closest(".section");
+    if (sec) setSectionStatus(sec, "Unsaved changes.");
+  })
+);
 
 /* ---------- weekly session ---------- */
 function renderWeekly() {
@@ -285,9 +298,12 @@ function oneOffRow(ev = {}) {
     </div>
     <div class="field"><label>Location</label><input type="text" data-f="location" value="${esc(ev.location || "")}" /></div>
     <div class="field"><label>Description</label><textarea data-f="description" style="min-height:64px">${esc(ev.description || "")}</textarea></div>`;
-  div.querySelector(".btn-danger").addEventListener("click", () => { div.remove(); setStatus("Unsaved changes."); });
-  div.querySelectorAll("input,textarea").forEach((el) =>
-    el.addEventListener("input", () => setStatus("Unsaved changes.")));
+  div.querySelector(".btn-danger").addEventListener("click", () => {
+    const sec = div.closest(".section");
+    div.remove();
+    setSectionStatus(sec, "Unsaved changes.");
+  });
+
   return div;
 }
 function renderOneOffs() {
@@ -297,7 +313,7 @@ function renderOneOffs() {
 }
 $("addEventBtn").addEventListener("click", () => {
   $("oneOffList").appendChild(oneOffRow());
-  setStatus("Unsaved changes.");
+  setSectionStatus($("oneOffList").closest(".section"), "Unsaved changes.");
 });
 function collectOneOffs() {
   const out = [];
@@ -334,7 +350,9 @@ function cardEl(c, i) {
     <div class="field"><label>Or upload a photo</label><input type="file" data-f="upload" accept="image/*" /></div>
     ${c.image ? `<img class="thumb" src="${esc(c.image)}" alt="" />` : ""}`;
   div.querySelector(".btn-danger").addEventListener("click", () => {
-    creations.splice(i, 1); delete pendingUploads[i]; renderCreations(); setStatus("Unsaved changes.");
+    const sec = div.closest(".section");
+    creations.splice(i, 1); delete pendingUploads[i]; renderCreations();
+    setSectionStatus(sec, "Unsaved changes.");
   });
   const fileInput = div.querySelector('[data-f="upload"]');
   fileInput.addEventListener("change", () => {
@@ -344,15 +362,13 @@ function cardEl(c, i) {
     rd.onload = () => openCropper(rd.result, i, div, fileInput);
     rd.readAsDataURL(f);
   });
-  div.querySelectorAll("input,textarea,select").forEach((el) => {
-    if (el.dataset.f !== "upload") el.addEventListener("input", () => setStatus("Unsaved changes."));
-  });
+
   return div;
 }
 $("addCardBtn").addEventListener("click", () => {
   creations.push({ title: "New creation", description: "", image: "" });
   renderCreations();
-  setStatus("Unsaved changes.");
+  setSectionStatus($("cards").closest(".section"), "Unsaved changes.");
 });
 function collectCreations() {
   const cards = $("cards").querySelectorAll(".card");
@@ -574,7 +590,7 @@ function stagePoint(e) {
       }
       th.src = dataUrl;
     }
-    setStatus("Photo cropped. Hit save to publish it.");
+    setSectionStatus(cropper.cardDiv.closest(".section"), "Photo cropped. Hit Save creations to publish it.");
     closeCropper();
   });
 })();
@@ -586,8 +602,7 @@ function renderSite() {
   $("site-theme").value = siteData.monthlyTheme || "";
   $("site-igHandle").value = siteData.instagramHandle || "";
   $("site-igUrl").value = siteData.instagramUrl || "";
-  $("panel").querySelectorAll("#site-heroLede,#site-mission,#site-theme,#site-igHandle,#site-igUrl")
-    .forEach((el) => el.addEventListener("input", () => setStatus("Unsaved changes.")));
+
 }
 function collectSite() {
   return {
@@ -599,60 +614,71 @@ function collectSite() {
   };
 }
 
-/* ---------- save ---------- */
-function setStatus(msg, cls = "") {
-  const s = $("status");
+/* ---------- save, one section at a time ----------
+   Each section writes only its own file, so saving the workshop time
+   can never clobber the creation photos (or vice versa). */
+function setSectionStatus(sec, msg, cls = "") {
+  const s = sec ? sec.querySelector("[data-status]") : null;
+  if (!s) return;
   s.textContent = msg;
   s.className = "status " + cls;
 }
-$("saveBtn").addEventListener("click", async () => {
-  const btn = $("saveBtn");
+
+async function saveSection(kind, btn) {
+  const sec = btn.closest(".section");
   btn.disabled = true;
-  setStatus("Saving...");
+  setSectionStatus(sec, "Saving...");
   try {
-    const finalCreations = collectCreations();
-    const finalEvents = {
-      _readme: eventsData._readme || "Krafting with Kay: events data.",
-      recurring: {
-        title: $("ev-title").value.trim() || "Open Krafting",
-        dayOfWeek: parseInt($("ev-day").value, 10),
-        startTime: to12h($("ev-start").value),
-        endTime: to12h($("ev-end").value),
-        price: $("ev-price").value.trim(),
-        discountNote: $("ev-discount").value.trim(),
-        address: $("ev-address").value.trim(),
-        description: $("ev-desc").value.trim(),
-      },
-      events: collectOneOffs(),
-    };
-    const finalSite = collectSite();
-    const images = Object.values(pendingUploads);
+    const files = {};
+    let images = [];
+    if (kind === "events") {
+      const finalEvents = {
+        _readme: eventsData._readme || "Krafting with Kay: events data.",
+        recurring: {
+          title: $("ev-title").value.trim() || "Open Krafting",
+          dayOfWeek: parseInt($("ev-day").value, 10),
+          startTime: to12h($("ev-start").value),
+          endTime: to12h($("ev-end").value),
+          price: $("ev-price").value.trim(),
+          discountNote: $("ev-discount").value.trim(),
+          address: $("ev-address").value.trim(),
+          description: $("ev-desc").value.trim(),
+        },
+        events: collectOneOffs(),
+      };
+      files["events.json"] = finalEvents;
+      eventsData = finalEvents;
+    } else if (kind === "creations") {
+      const finalCreations = collectCreations();
+      files["creations.json"] = finalCreations;
+      images = Object.values(pendingUploads);
+      creations = finalCreations;
+      pendingUploads = {};
+    } else if (kind === "site") {
+      const finalSite = collectSite();
+      files["site.json"] = finalSite;
+      siteData = finalSite;
+    } else {
+      throw new Error("Unknown section.");
+    }
 
     const res = await fetch("/api/admin-save", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        files: {
-          "creations.json": finalCreations,
-          "events.json": finalEvents,
-          "site.json": finalSite,
-        },
-        images,
-      }),
+      body: JSON.stringify({ files, images }),
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok || !data.ok) throw new Error(data.error || "Save failed.");
-    creations = finalCreations;
-    eventsData = finalEvents;
-    siteData = finalSite;
-    pendingUploads = {};
-    renderAll();
-    setStatus("Saved. The site updates itself in about a minute.", "ok");
+    if (kind === "creations") renderCreations();
+    setSectionStatus(sec, "Saved. The site updates itself in about a minute.", "ok");
   } catch (e) {
-    setStatus(e.message || "Save failed.", "err");
+    setSectionStatus(sec, e.message || "Save failed.", "err");
   }
   btn.disabled = false;
-});
+}
+document.querySelectorAll("[data-save]").forEach((b) =>
+  b.addEventListener("click", () => saveSection(b.dataset.save, b))
+);
 </script>
 </body>
 </html>
