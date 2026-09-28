@@ -170,7 +170,8 @@ function populateWorkshopInfo(r) {
 async function initEvents() {
   const homeList = document.getElementById("upcomingList");
   const calList = document.getElementById("calendarList");
-  if (!homeList && !calList) return;
+  const visit = document.getElementById("visitLede");
+  if (!homeList && !calList && !visit) return;
   let data;
   try {
     data = await (await fetch("events.json")).json();
