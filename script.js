@@ -169,8 +169,8 @@ async function initEvents() {
   try {
     data = await (await fetch("events.json")).json();
   } catch {
-    if (homeList) homeList.innerHTML = '<p class="muted">Check Instagram for the latest schedule.</p>';
-    if (calList) calList.innerHTML = '<p class="muted">Check Instagram for the latest schedule.</p>';
+    if (homeList) homeList.innerHTML = '<p class="muted">New sessions are added regularly, please check back soon.</p>';
+    if (calList) calList.innerHTML = '<p class="muted">New sessions are added regularly, please check back soon.</p>';
     initBooking([]);
     return;
   }
@@ -284,11 +284,6 @@ async function loadSite() {
     set("heroLede", s.heroLede);
     set("missionText", s.missionText);
     set("monthlyTheme", s.monthlyTheme);
-    if (s.instagramUrl) {
-      document.querySelectorAll("a.insta-link").forEach((a) => (a.href = s.instagramUrl));
-      const f = document.getElementById("instaFooter");
-      if (f) f.href = s.instagramUrl;
-    }
     if (s.instagramHandle) {
       const f = document.getElementById("instaFooter");
       if (f) f.textContent = s.instagramHandle;
@@ -300,7 +295,7 @@ async function loadSite() {
   heartifyKwK(document.body);
 }
 
-/* ---------- gallery strip: sideways scroll, tiles link to IG posts ---------- */
+/* ---------- gallery strip: sideways scroll, tiles open an on-site lightbox ---------- */
 function renderGallery(items) {
   const strip = document.getElementById("galleryStrip");
   if (!strip) return;
@@ -312,15 +307,10 @@ function renderGallery(items) {
   }
   strip.style.display = "";
   list.forEach((g, i) => {
-    const hasLink = typeof g.postUrl === "string" && g.postUrl.trim().length > 0;
-    const el = document.createElement(hasLink ? "a" : "div");
+    const el = document.createElement("button");
+    el.type = "button";
     el.className = "gtile g" + ((i % 6) + 1);
-    if (hasLink) {
-      el.href = g.postUrl.trim();
-      el.target = "_blank";
-      el.rel = "noopener";
-      el.setAttribute("aria-label", (g.caption || "Gallery photo") + " (opens Instagram)");
-    }
+    el.setAttribute("aria-label", (g.caption || "Gallery photo") + " (view larger)");
     if (g.image) {
       const img = document.createElement("img");
       img.src = g.image;
@@ -331,9 +321,40 @@ function renderGallery(items) {
     const cap = document.createElement("span");
     cap.textContent = g.caption || "";
     el.appendChild(cap);
+    el.addEventListener("click", () => openLightbox(g.image, g.caption));
     strip.appendChild(el);
   });
 }
+
+/* ---------- lightbox: keep visitors on the site instead of sending them to IG ---------- */
+function openLightbox(src, caption) {
+  if (!src) return;
+  const lb = document.getElementById("lightbox");
+  if (!lb) return;
+  const img = document.getElementById("lightboxImg");
+  img.src = src;
+  img.alt = caption || "";
+  document.getElementById("lightboxCap").textContent = caption || "";
+  lb.hidden = false;
+  document.body.style.overflow = "hidden";
+}
+function closeLightbox() {
+  const lb = document.getElementById("lightbox");
+  if (!lb) return;
+  lb.hidden = true;
+  document.body.style.overflow = "";
+}
+(function initLightbox() {
+  const lb = document.getElementById("lightbox");
+  if (!lb) return;
+  document.getElementById("lightboxClose").addEventListener("click", closeLightbox);
+  lb.addEventListener("click", (e) => {
+    if (e.target === lb) closeLightbox();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !lb.hidden) closeLightbox();
+  });
+})();
 loadSite();
 
 /* ---------- auto-scroll: slow drift for sideways strips, pauses when touched ---------- */

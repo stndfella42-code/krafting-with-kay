@@ -180,12 +180,9 @@
       <!-- ============ INSTAGRAM ============ -->
       <div class="section">
         <h2>Instagram</h2>
-        <p class="hint">Updates every Instagram button and link on the site.</p>
+        <p class="hint">Shows your handle as plain text in the footer. The site no longer links out to Instagram, to keep visitors here.</p>
         <div class="card">
-          <div class="grid2">
-            <div class="field"><label>Handle</label><input type="text" id="site-igHandle" placeholder="@krafting_w_kay" /></div>
-            <div class="field"><label>Profile link</label><input type="url" id="site-igUrl" placeholder="https://www.instagram.com/..." /></div>
-          </div>
+          <div class="field"><label>Handle</label><input type="text" id="site-igHandle" placeholder="@krafting_w_kay" /></div>
         </div>
         <div class="section-save">
           <button class="btn" type="button" data-save="site">Save homepage &amp; Instagram</button>
@@ -404,7 +401,6 @@ function gallerySlotEl(g, i) {
   div.innerHTML = `
     <div class="card-head"><h3>Photo ${i + 1}</h3><button class="btn-danger" type="button">Remove</button></div>
     <div class="field"><label>Caption</label><input type="text" data-f="caption" value="${esc(g.caption || "")}" placeholder="Dried flower lantern" /></div>
-    <div class="field"><label>Instagram post link (optional, tile taps through to it)</label><input type="url" data-f="postUrl" value="${esc(g.postUrl || "")}" placeholder="https://www.instagram.com/p/..." /></div>
     <div class="field"><label>Photo link (optional)</label><input type="url" data-f="image" value="${esc(g.image || "")}" placeholder="https://..." /></div>
     <div class="field"><label>Or upload a photo</label><input type="file" data-f="upload" accept="image/*" /></div>
     ${g.image ? `<img class="thumb" src="${esc(g.image)}" alt="" />` : ""}`;
@@ -425,7 +421,7 @@ function gallerySlotEl(g, i) {
 }
 $("addGalleryBtn").addEventListener("click", () => {
   siteData.gallery = siteData.gallery || [];
-  siteData.gallery.push({ caption: "", image: "", postUrl: "" });
+  siteData.gallery.push({ caption: "", image: "" });
   renderGallerySlots();
   setSectionStatus($("gallerySlots").closest(".section"), "Unsaved changes.");
 });
@@ -433,7 +429,7 @@ function collectGallery() {
   const slots = $("gallerySlots").querySelectorAll(".card");
   return [...slots].map((div) => {
     const g = (f) => (div.querySelector(`[data-f="${f}"]`).value || "").trim();
-    return { caption: g("caption"), image: g("image"), postUrl: g("postUrl") };
+    return { caption: g("caption"), image: g("image") };
   }).filter((g) => g.caption || g.image);
 }
 
@@ -666,7 +662,6 @@ function renderSite() {
   $("site-mission").value = siteData.missionText || "";
   $("site-theme").value = siteData.monthlyTheme || "";
   $("site-igHandle").value = siteData.instagramHandle || "";
-  $("site-igUrl").value = siteData.instagramUrl || "";
 
 }
 function collectSite() {
@@ -675,7 +670,6 @@ function collectSite() {
     missionText: $("site-mission").value.trim(),
     monthlyTheme: $("site-theme").value.trim(),
     instagramHandle: $("site-igHandle").value.trim(),
-    instagramUrl: $("site-igUrl").value.trim(),
   };
 }
 

@@ -58,7 +58,7 @@
         <p class="lede" id="heroLede">Hands-on craft workshops and upcycled creations in Aurora, Colorado, where everyday materials become <strong>meaningful creations</strong>.</p>
         <div class="hero-cta">
           <a href="#workshops" class="btn">Join a workshop</a>
-          <a href="https://www.instagram.com/krafting_w_kay" target="_blank" rel="noopener" class="btn btn-ghost insta-link">See it on Instagram</a>
+          <a href="#gallery" class="btn btn-ghost">See the gallery</a>
         </div>
         <a class="scroll-cue" href="#mission" aria-label="Scroll to our mission"><span></span></a>
       </div>
@@ -139,7 +139,6 @@
         <p class="eyebrow">Recent work</p>
         <h2>Gallery</h2>
         <div class="hstrip" id="galleryStrip" tabindex="0" aria-label="Recent work, scroll sideways to see more"></div>
-        <p class="center"><a class="link-arrow insta-link" href="https://www.instagram.com/krafting_w_kay" target="_blank" rel="noopener">See everything on Instagram →</a></p>
       </div>
     </section>
 
@@ -153,7 +152,7 @@
           <address><strong>22253 E Ida Pl<br />Aurora, CO 80015</strong></address>
           <div class="hero-cta" style="justify-content:center; margin-top:0">
             <a class="btn" href="https://www.google.com/maps/search/?api=1&query=22253+E+Ida+Pl+Aurora+CO+80015" target="_blank" rel="noopener">Get directions</a>
-            <a class="btn btn-ghost insta-link" href="https://www.instagram.com/krafting_w_kay" target="_blank" rel="noopener">DM Kay</a>
+            <a class="btn btn-ghost" href="book.html">Book a session</a>
           </div>
         </div>
       </div>
@@ -172,10 +171,18 @@
         <a href="events.html">Calendar</a>
         <a href="book.html">Book a session</a>
       </nav>
-      <p><a class="insta-link" id="instaFooter" href="https://www.instagram.com/krafting_w_kay" target="_blank" rel="noopener">@krafting_w_kay</a></p>
-      <p class="footer-note">© <span id="year"></span> Krafting with Kay · Reduce. Reuse. Reimagine. · Made with love in Aurora, CO</p>
+      <p><span id="instaFooter">@krafting_w_kay</span></p>
+      <p class="footer-note"><a class="stealth-admin" href="settings.html">© <span id="year"></span> Krafting with Kay</a> · Reduce. Reuse. Reimagine. · Made with love in Aurora, CO</p>
     </div>
   </footer>
+
+  <div class="lightbox" id="lightbox" hidden>
+    <figure>
+      <img id="lightboxImg" alt="" />
+      <figcaption id="lightboxCap"></figcaption>
+    </figure>
+    <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Close photo viewer">×</button>
+  </div>
 
   <script src="script.js"></script>
 </body>

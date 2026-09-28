@@ -278,6 +278,11 @@ h3 { font-size: 1.45rem; margin-bottom: 0.4rem; }
   text-shadow: 0 1px 6px rgba(0,0,0,0.35);
 }
 a.gtile { cursor: pointer; }
+button.gtile {
+  font-family: inherit; font-size: 0.9rem; font-weight: 500;
+  letter-spacing: 0.04em; color: #fff;
+  background: none; border: 0; cursor: pointer;
+}
 .gtile img {
   position: absolute; inset: 0; width: 100%; height: 100%;
   object-fit: cover;
@@ -295,6 +300,33 @@ a.gtile { cursor: pointer; }
 .g5 { background: linear-gradient(135deg, #c98f5f, #be7a4f); }
 .g6 { background: linear-gradient(135deg, #9aa583, #8a8447); }
 
+/* ---------- lightbox ---------- */
+.lightbox {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(46, 42, 34, 0.9);
+  display: flex; align-items: center; justify-content: center;
+  padding: 1.25rem;
+}
+.lightbox[hidden] { display: none; }
+.lightbox figure { margin: 0; max-width: min(92vw, 640px); }
+.lightbox img {
+  width: 100%; max-height: 76vh; object-fit: contain;
+  border-radius: var(--radius); background: #111;
+}
+.lightbox figcaption {
+  color: var(--cream); text-align: center;
+  margin-top: 0.75rem; font-weight: 500; letter-spacing: 0.03em;
+}
+.lightbox-close {
+  position: absolute; top: 0.75rem; right: 0.75rem;
+  width: 2.75rem; height: 2.75rem; border-radius: 50%;
+  border: 1px solid rgba(255,255,245,0.4);
+  background: transparent; color: var(--cream);
+  font-size: 1.5rem; line-height: 1; cursor: pointer;
+}
+.lightbox-close:hover { background: rgba(255,255,245,0.15); }
+
+/* ---------- stealth admin link: looks like plain footer text ---------- */
 /* ---------- visit ---------- */
 .visit-card {
   background: var(--paper); border: 1px solid var(--line);
@@ -318,7 +350,7 @@ a.gtile { cursor: pointer; }
 .footer-nav a { color: var(--cream); text-decoration: none; font-size: 0.92rem; letter-spacing: 0.05em; opacity: 0.92; }
 .footer-nav a:hover { opacity: 1; text-decoration: underline; text-underline-offset: 3px; }
 .site-footer a { color: var(--cream); }
-.site-footer .insta-link { font-weight: 500; letter-spacing: 0.03em; }
+.site-footer #instaFooter { font-weight: 500; letter-spacing: 0.03em; }
 .footer-note { width: 100%; text-align: center; margin-top: 1.5rem; font-size: 0.82rem; opacity: 0.8; font-weight: 300; letter-spacing: 0.06em; }
 
 /* ---------- reveal animation ---------- */
