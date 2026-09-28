@@ -328,15 +328,12 @@ button.gtile {
 .lightbox-close:hover { background: rgba(255,255,245,0.15); }
 
 /* ---------- stealth admin link: looks like plain footer text ---------- */
-/* ---------- footer floral band: muted daisies, melts into the pale sage ---------- */
-.footer-floral { background: var(--sage-pale); line-height: 0; }
+/* ---------- footer floral: free-standing illustration, melts into the pale sage ---------- */
+.footer-floral { background: var(--sage-pale); text-align: center; padding: 0.5rem 1.5rem 0; line-height: 0; }
 .footer-floral img {
-  display: block; width: 100%;
-  height: clamp(320px, 42vw, 640px);
-  object-fit: cover; object-position: 50% 100%;
-}
-@media (max-width: 600px) {
-  .footer-floral img { height: auto; }
+  display: inline-block; width: min(680px, 94vw); height: auto;
+  -webkit-mask-image: linear-gradient(to bottom, black 84%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 84%, transparent 100%);
 }
 
 /* ---------- visit ---------- */
