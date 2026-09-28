@@ -730,13 +730,13 @@ function initPhotoCycles(root) {
 }
 
 async function renderShop() {
-  const kitsGrid = document.getElementById("kitsGrid") || document.getElementById("homeKitsGrid");
+  const kitsGrid = document.getElementById("kitsGrid");
   if (!kitsGrid && !document.getElementById("finishedGrid")) return;
   let data;
   try {
     data = await (await fetch("shop.json")).json();
   } catch {
-    ["kitsGrid", "homeKitsGrid", "finishedGrid", "accessoriesGrid"].forEach((id) => {
+    ["kitsGrid", "finishedGrid", "accessoriesGrid"].forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.innerHTML = '<p class="muted">Check back soon!</p>';
     });
@@ -750,7 +750,6 @@ async function renderShop() {
     el.querySelectorAll(".card").forEach((c) => { c.classList.add("reveal"); io.observe(c); });
   };
   paint("kitsGrid", data.kits, true);
-  paint("homeKitsGrid", data.kits, false);
   paint("finishedGrid", data.finished, false);
   paint("accessoriesGrid", data.accessories, false);
   const banner = document.getElementById("bundleBanner");
