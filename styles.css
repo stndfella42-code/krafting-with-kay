@@ -140,7 +140,7 @@ h3 { font-size: 1.45rem; margin-bottom: 0.4rem; }
 .hero-badge img {
   display: block; width: 100%; aspect-ratio: 1;
   border-radius: 50%; object-fit: cover;
-  box-shadow: 0 0 0 6px var(--cream), 0 10px 30px rgba(46,42,35,0.18);
+  box-shadow: 0 10px 30px rgba(46,42,35,0.18);
 }
 .badge-ring {
   position: absolute; inset: -17%; overflow: visible;
