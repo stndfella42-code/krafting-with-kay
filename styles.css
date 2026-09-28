@@ -228,9 +228,9 @@ section[id] { scroll-margin-top: 84px; }
   border-radius: 50%; display: block;
 }
 .easter-egg {
-  position: absolute; left: 10px; bottom: 8px;
-  width: 74px; height: auto;
-  opacity: 0.42; pointer-events: none;
+  position: absolute; left: 14px; bottom: 12px;
+  width: 150px; height: auto;
+  opacity: 0.75; pointer-events: none;
 }
 .photo-placeholder {
   width: 280px; height: 340px;
