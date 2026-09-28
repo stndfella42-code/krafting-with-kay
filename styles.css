@@ -332,7 +332,7 @@ button.gtile {
 .footer-floral { background: var(--sage-pale); line-height: 0; }
 .footer-floral img {
   display: block; width: 100%;
-  height: clamp(200px, 28vw, 360px);
+  height: clamp(320px, 42vw, 640px);
   object-fit: cover; object-position: 50% 100%;
 }
 @media (max-width: 600px) {
