@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Book with KwK | Krafting with Kay</title>
+  <meta name="description" content="Reserve your spot at a Krafting with Kay workshop in Aurora, CO. Pick a session, tell KwK who's coming, and we'll confirm by email." />
+  <link rel="icon" href="assets/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body id="top">
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="index.html">
+        <img src="assets/logo.png" alt="Krafting with Kay logo" />
+        <span class="brand-name">Krafting <span>with Kay</span></span>
+      </a>
+      <nav class="site-nav" id="siteNav">
+        <a href="index.html#mission">Mission</a>
+        <a href="index.html#workshops">Workshops</a>
+        <a href="events.html">Calendar</a>
+        <a href="index.html#creations">Creations</a>
+        <a href="index.html#visit">Visit</a>
+        <a href="book.html" class="btn btn-small" aria-current="page">Book with KwK</a>
+      </nav>
+      <button class="nav-toggle" id="navToggle" aria-label="Open menu">☰</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" style="padding-bottom:2.5rem">
+      <div class="floral-band" aria-hidden="true"></div>
+      <div class="wrap hero-inner" style="padding-top:2rem">
+        <p class="eyebrow">Reserve your spot</p>
+        <h1>Book with <span class="thin">KwK</span></h1>
+        <p class="tagline">Reduce. Reuse. Reimagine.</p>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:1.5rem">
+      <div class="wrap">
+        <p class="lede center" style="margin:0 auto 2rem">Pick a session, tell KwK who's coming, and we'll confirm your spots by email.</p>
+        <form id="bookForm" class="book-form" novalidate>
+          <div class="form-row">
+            <label>Your name
+              <input type="text" name="name" required autocomplete="name" placeholder="Jane Doe" />
+            </label>
+            <label>Email
+              <input type="email" name="email" required autocomplete="email" placeholder="you@example.com" />
+            </label>
+          </div>
+          <label>Phone <span class="muted">(optional)</span>
+            <input type="tel" name="phone" autocomplete="tel" placeholder="(303) 555-0123" />
+          </label>
+          <div class="addr-wrap">
+            <label>Street address
+              <input type="text" id="addressInput" name="address" required autocomplete="street-address" placeholder="Start typing your address…" />
+            </label>
+            <div id="addressSuggestions" class="addr-suggest" hidden></div>
+          </div>
+          <div class="kids-block">
+            <span class="kids-heading">Kids attending</span>
+            <div id="kidRows"></div>
+            <button type="button" id="addKidBtn" class="add-kid">+ Add another child</button>
+          </div>
+          <label>Choose a session
+            <select id="sessionSelect" name="session" required>
+              <option value="" disabled selected>Loading sessions…</option>
+            </select>
+          </label>
+          <label id="customDateWrap" hidden>Or pick a date from the calendar
+            <input type="date" id="customDate" name="customDate" />
+          </label>
+          <label>Anything KwK should know?
+            <textarea name="notes" rows="3" placeholder="Ages, allergies, birthday party details…"></textarea>
+          </label>
+          <label class="waiver">
+            <input type="checkbox" name="waiver" required />
+            <span>I agree to the KwK workshop waiver: I understand workshops involve hands-on crafting with kid-safe tools and materials, and I take responsibility for my child's participation.</span>
+          </label>
+          <button class="btn" type="submit" id="bookSubmit">Send booking request</button>
+          <p class="form-note" id="formNote" role="status"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <div class="footer-brand">
+        <img src="assets/logo.png" alt="Krafting with Kay logo" />
+        <span class="brand-name">Krafting <span>with Kay</span></span>
+      </div>
+      <nav class="footer-nav" aria-label="Footer">
+        <a href="index.html#workshops">Workshops</a>
+        <a href="index.html#creations">Creations</a>
+        <a href="events.html">Calendar</a>
+        <a href="book.html">Book a session</a>
+      </nav>
+      <p><a class="insta-link" id="instaFooter" href="https://www.instagram.com/krafting_w_kay" target="_blank" rel="noopener">@krafting_w_kay</a></p>
+      <p class="footer-note">© <span id="year"></span> Krafting with Kay · Reduce. Reuse. Reimagine. · Made with love in Aurora, CO</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

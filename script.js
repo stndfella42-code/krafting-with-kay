@@ -182,6 +182,7 @@ async function initEvents() {
       <div class="upcoming-row">
         <div class="upcoming-date"><strong>${fmtShortDate(s.date)}</strong><span>${sessionTime(s)}</span></div>
         <div class="upcoming-info"><span class="event-tag">${s.tag}</span> ${s.title}</div>
+        <a class="link-arrow upcoming-book" href="book.html?session=${isoDate(s.date)}">Book →</a>
       </div>`).join("") ||
       '<p class="muted">No sessions scheduled right now. Check back soon!</p>';
   }
@@ -210,7 +211,7 @@ async function initEvents() {
           <p class="event-meta">${sessionTime(s)}${s.location ? " · " + s.location : ""}</p>
           ${s.price ? `<p class="event-price">${s.price}</p>` : ""}
           ${s.description ? `<p class="muted small">${s.description}</p>` : ""}
-          <a class="link-arrow" href="index.html?session=${isoDate(s.date)}#book">Book with KwK →</a>
+          <a class="link-arrow" href="book.html?session=${isoDate(s.date)}">Book with KwK →</a>
         </div>
       </article>`;
     });
@@ -226,6 +227,23 @@ async function initEvents() {
 }
 initEvents();
 
+/* ---------- booking page: init the form when the homepage lists aren't present ---------- */
+async function initBookingPage() {
+  if (
+    document.getElementById("bookForm") &&
+    !document.getElementById("upcomingList") &&
+    !document.getElementById("calendarList")
+  ) {
+    try {
+      const data = await (await fetch("events.json")).json();
+      initBooking(buildSessions(data));
+    } catch {
+      initBooking([]);
+    }
+  }
+}
+initBookingPage();
+
 /* ---------- creations (rendered from creations.json) ---------- */
 function esc(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({
@@ -233,12 +251,12 @@ function esc(s) {
   }[c]));
 }
 async function renderCreations() {
-  const grid = document.getElementById("creationsGrid");
+  const grid = document.getElementById("creationsStrip");
   if (!grid) return;
   try {
     const items = await (await fetch("creations.json")).json();
     grid.innerHTML = items.map((c) => `
-      <article class="card">
+      <article class="card strip-card">
         ${c.image ? `<img class="card-img" src="${esc(c.image)}" alt="${esc(c.title)}" loading="lazy" />` : ""}
         <h3>${esc(c.title)}</h3>
         <p>${esc(c.description)}</p>
@@ -318,9 +336,8 @@ function renderGallery(items) {
 }
 loadSite();
 
-/* ---------- gallery auto-scroll: slow drift, pauses when touched ---------- */
-(function initGalleryAutoScroll() {
-  const strip = document.getElementById("galleryStrip");
+/* ---------- auto-scroll: slow drift for sideways strips, pauses when touched ---------- */
+function initAutoScroll(strip) {
   if (!strip) return;
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   let paused = false;
@@ -353,7 +370,9 @@ loadSite();
       strip.scrollBy({ left: 1 });
     }
   }, 40);
-})();
+}
+initAutoScroll(document.getElementById("galleryStrip"));
+initAutoScroll(document.getElementById("creationsStrip"));
 function formatAddr(p) {
   const street = [p.housenumber, p.street].filter(Boolean).join(" ");
   const city = p.city || p.town || p.village || "";
