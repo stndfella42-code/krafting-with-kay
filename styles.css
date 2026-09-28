@@ -333,7 +333,7 @@ button.gtile {
   background-image: url("assets/daisy-footer.webp");
   background-repeat: no-repeat;
   background-position: 50% 100%;
-  background-size: 1500px auto;
+  background-size: min(1400px, 100%) auto;
 }
 @media (max-width: 760px) {
   #visit { background-size: 640px auto; }
