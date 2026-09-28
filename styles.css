@@ -328,12 +328,15 @@ button.gtile {
 .lightbox-close:hover { background: rgba(255,255,245,0.15); }
 
 /* ---------- stealth admin link: looks like plain footer text ---------- */
-/* ---------- footer floral: free-standing illustration, melts into the pale sage ---------- */
-.footer-floral { background: var(--sage-pale); text-align: center; padding: 0.5rem 1.5rem 0; line-height: 0; }
-.footer-floral img {
-  display: inline-block; width: min(680px, 94vw); height: auto;
-  -webkit-mask-image: linear-gradient(to bottom, black 84%, transparent 100%);
-  mask-image: linear-gradient(to bottom, black 84%, transparent 100%);
+/* ---------- visit: white card nestled between the daisy clusters ---------- */
+#visit {
+  background-image: url("assets/daisy-footer.webp");
+  background-repeat: no-repeat;
+  background-position: 50% 100%;
+  background-size: 1500px auto;
+}
+@media (max-width: 760px) {
+  #visit { background-size: 640px auto; }
 }
 
 /* ---------- visit ---------- */
