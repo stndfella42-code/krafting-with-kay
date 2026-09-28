@@ -638,3 +638,37 @@ function initBooking(sessions) {
 
 /* hearts on anything rendered after load */
 heartifyKwK(document.body);
+
+/* ---------- cycling emblem: one badge flips through Reduce / Reuse / Reimagine ---------- */
+(function initPillarCycle() {
+  const cycles = document.querySelectorAll(".pillar-cycle");
+  if (!cycles.length) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const data = [
+    { word: "Reduce", text: "Environmental stewardship starts small: seeing new possibility in what others throw away.", bg: "var(--sage-deep)" },
+    { word: "Reuse", text: "Everyday materials get a second life through hands-on building, crafting, and creating.", bg: "var(--olive)" },
+    { word: "Reimagine", text: "Children discover their talents, build confidence, and make a positive impact in their community.", bg: "var(--clay)" },
+  ];
+  cycles.forEach((root) => {
+    const badge = root.querySelector(".cycle-badge");
+    const icons = root.querySelectorAll(".cycle-icon");
+    const word = root.querySelector(".cycle-word");
+    const text = root.querySelector(".cycle-text");
+    let i = 0;
+    setInterval(() => {
+      badge.style.transform = "rotateY(90deg)";
+      word.style.opacity = "0";
+      text.style.opacity = "0";
+      setTimeout(() => {
+        i = (i + 1) % data.length;
+        icons.forEach((ic, k) => ic.classList.toggle("active", k === i));
+        word.textContent = data[i].word;
+        text.textContent = data[i].text;
+        badge.style.background = data[i].bg;
+        badge.style.transform = "rotateY(0deg)";
+        word.style.opacity = "1";
+        text.style.opacity = "1";
+      }, 340);
+    }, 3400);
+  });
+})();
