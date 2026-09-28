@@ -487,9 +487,11 @@ button.gtile {
 .fl-fg-a { left: calc(50% - 355px); bottom: 8px; height: 400px; width: auto; }
 .fl-fg-b { right: calc(50% - 400px); bottom: 10px; height: 380px; width: auto; }
 @media (max-width: 760px) {
-  #visit { background-size: 94% auto; }
-  .fl-fg-a { height: 230px; left: -10px; bottom: 10px; }
+  #visit { background-size: 86% auto; }
+  .fl-fg-a { height: 230px; left: 8px; bottom: 10px; }
   .fl-fg-b { display: none; }
+  .easter-egg { width: 92px; left: 12px; bottom: 10px; opacity: 0.55; }
+  .site-footer { padding-bottom: 3.6rem; }
 }
 
 /* ---------- visit ---------- */
