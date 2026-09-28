@@ -251,23 +251,25 @@ function esc(s) {
   }[c]));
 }
 async function renderCreations() {
-  const grid = document.getElementById("creationsStrip");
-  if (!grid) return;
+  const strip = document.getElementById("creationsStrip");
+  const grid = document.getElementById("creationsGrid");
+  const target = strip || grid;
+  if (!target) return;
   try {
     const items = await (await fetch("creations.json")).json();
-    grid.innerHTML = items.map((c) => `
-      <article class="card strip-card">
+    target.innerHTML = items.map((c) => `
+      <article class="card${strip ? " strip-card" : ""}">
         ${c.image ? `<img class="card-img" src="${esc(c.image)}" alt="${esc(c.title)}" loading="lazy" />` : ""}
         <h3>${esc(c.title)}</h3>
         <p>${esc(c.description)}</p>
       </article>`).join("");
-    loopify(grid);
-    grid.querySelectorAll(".card").forEach((el) => {
+    if (strip) loopify(strip);
+    target.querySelectorAll(".card").forEach((el) => {
       el.classList.add("reveal");
       io.observe(el);
     });
   } catch {
-    grid.innerHTML = '<p class="muted">Check back soon!</p>';
+    target.innerHTML = '<p class="muted">Check back soon!</p>';
   }
 }
 renderCreations();
