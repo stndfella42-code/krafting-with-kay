@@ -56,6 +56,16 @@ h3 { font-size: 1.45rem; margin-bottom: 0.4rem; }
 
 .lede { font-size: 1.12rem; color: var(--ink-soft); max-width: 36rem; font-weight: 300; }
 .lede strong { font-weight: 500; color: var(--ink); }
+.pull-quote {
+  font-family: var(--font-display); font-style: italic; font-weight: 500;
+  font-size: clamp(1.5rem, 3.4vw, 2.1rem); line-height: 1.35; color: var(--clay);
+  text-align: center; max-width: 40rem; margin: 3rem auto 0; padding: 0 1rem;
+  position: relative;
+}
+.pull-quote::before {
+  content: "\201C"; display: block; font-size: 3.2rem; line-height: 1;
+  color: var(--sage); margin-bottom: 0.25rem;
+}
 
 .tagline {
   font-family: var(--font-display);

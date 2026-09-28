@@ -280,6 +280,27 @@ async function renderCreations() {
 }
 renderCreations();
 
+async function renderFeatured() {
+  const grid = document.getElementById("featuredGrid");
+  if (!grid) return;
+  try {
+    const items = (await (await fetch("creations.json")).json()).slice(0, 3);
+    grid.innerHTML = items.map((c) => `
+      <article class="card">
+        ${c.image ? `<img class="card-img" src="${esc(c.image)}" alt="${esc(c.title)}" loading="lazy" />` : ""}
+        <h3>${esc(c.title)}</h3>
+        <p>${esc(c.description)}</p>
+      </article>`).join("");
+    grid.querySelectorAll(".card").forEach((el) => {
+      el.classList.add("reveal");
+      io.observe(el);
+    });
+  } catch {
+    grid.innerHTML = '<p class="muted">Check back soon!</p>';
+  }
+}
+renderFeatured();
+
 /* ---------- site-wide editable text (site.json) ---------- */
 async function loadSite() {
   try {
