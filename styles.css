@@ -144,6 +144,7 @@ h3 { font-size: 1.45rem; margin-bottom: 0.4rem; }
 }
 .badge-ring {
   position: absolute; inset: -17%; overflow: visible;
+  filter: drop-shadow(0 8px 14px rgba(46,42,35,0.22));
   animation: badge-spin 26s linear infinite;
 }
 .ring-line { fill: none; stroke: var(--sage-deep); stroke-width: 1.5; opacity: 0.65; }
